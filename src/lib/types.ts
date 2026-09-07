@@ -28,6 +28,22 @@ export interface Employee {
   updatedAt: string;
 }
 
+export interface ElementLayout {
+  x: number; // percentage of card width (0 - 100)
+  y: number; // percentage of card height (0 - 100)
+  fontSize: number; // font size in canvas px
+  textAlign?: "left" | "center" | "right";
+}
+
+export interface CardLayoutSettings {
+  name: ElementLayout;
+  designation: ElementLayout;
+  phone: ElementLayout;
+  email: ElementLayout;
+  website: ElementLayout;
+  address: ElementLayout;
+}
+
 export interface VisitingCardData {
   name: string;
   designation: string;
@@ -35,6 +51,7 @@ export interface VisitingCardData {
   email: string;
   website: string;
   address: string;
+  layout?: CardLayoutSettings;
   updatedAt?: string;
 }
 
