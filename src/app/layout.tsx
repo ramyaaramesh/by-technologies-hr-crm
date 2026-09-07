@@ -21,7 +21,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo-badge.png" />
       </head>
-      <body className="antialiased bg-[#F6FAF0] text-[#331E1E]">
+      <body className="antialiased bg-[#F5F9F7] text-[#162E3D]">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

@@ -233,7 +233,7 @@ export default function RecruitmentSection() {
     <div className="space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-[#E2EAD6] shadow-by flex items-center justify-between">
+        <div className="bg-white p-4 rounded-2xl border border-[#DDEAE2] shadow-by flex items-center justify-between">
           <div>
             <div className="text-2xl font-bold text-[#234404]">{openCount}</div>
             <div className="text-xs text-[#706161]">Active Job Postings</div>
@@ -243,41 +243,41 @@ export default function RecruitmentSection() {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-[#E2EAD6] shadow-by flex items-center justify-between">
+        <div className="bg-white p-4 rounded-2xl border border-[#DDEAE2] shadow-by flex items-center justify-between">
           <div>
-            <div className="text-2xl font-bold text-[#331E1E]">{totalOpeningsNeeded}</div>
+            <div className="text-2xl font-bold text-[#162E3D]">{totalOpeningsNeeded}</div>
             <div className="text-xs text-[#706161]">Total Positions to Hire</div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-[#331E1E] text-[#A2FC4B] flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-[#162E3D] text-[#45C512] flex items-center justify-center font-bold">
             <Users className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-[#E2EAD6] shadow-by flex items-center justify-between">
+        <div className="bg-white p-4 rounded-2xl border border-[#DDEAE2] shadow-by flex items-center justify-between">
           <div>
             <div className="text-2xl font-bold text-[#706161]">{closedCount}</div>
             <div className="text-xs text-[#706161]">Filled / Closed Postings</div>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-[#F6FAF0] text-[#706161] border border-[#E2EAD6] flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-[#F5F9F7] text-[#706161] border border-[#DDEAE2] flex items-center justify-center font-bold">
             <Clock className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Action Header & Filters */}
-      <div className="bg-white p-5 rounded-2xl border border-[#E2EAD6] shadow-by space-y-4">
+      <div className="bg-white p-5 rounded-2xl border border-[#DDEAE2] shadow-by space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-[#331E1E]">Recruitment &amp; Vacancies</h2>
+            <h2 className="text-base font-bold text-[#162E3D]">Recruitment &amp; Vacancies</h2>
             <p className="text-xs text-[#706161]">
               Manage job titles, openings counts, department requirements, and posting statuses.
             </p>
           </div>
           <button
             onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2 bg-[#331E1E] hover:bg-[#442828] text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 bg-[#162E3D] hover:bg-[#244254] text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer"
           >
-            <Plus className="w-4 h-4 text-[#A2FC4B]" />
+            <Plus className="w-4 h-4 text-[#45C512]" />
             Post New Opening
           </button>
         </div>
@@ -291,14 +291,14 @@ export default function RecruitmentSection() {
               placeholder="Search job title or keywords..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B] text-[#331E1E]"
+              className="w-full pl-10 pr-4 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512] text-[#162E3D]"
             />
           </div>
           <div className="flex flex-wrap gap-2">
             <select
               value={deptFilter}
               onChange={(e) => setDeptFilter(e.target.value)}
-              className="px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B] text-[#331E1E] font-medium"
+              className="px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512] text-[#162E3D] font-medium"
             >
               <option value="All">All Departments</option>
               {departments.map((d) => (
@@ -310,7 +310,7 @@ export default function RecruitmentSection() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B] text-[#331E1E] font-medium"
+              className="px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512] text-[#162E3D] font-medium"
             >
               <option value="All">All Statuses</option>
               <option value="open">Open Only</option>
@@ -318,7 +318,7 @@ export default function RecruitmentSection() {
             </select>
             <button
               onClick={fetchJobs}
-              className="p-2 bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl text-[#706161] hover:text-[#331E1E] transition-colors"
+              className="p-2 bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl text-[#706161] hover:text-[#162E3D] transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -328,11 +328,11 @@ export default function RecruitmentSection() {
 
       {/* Job Openings Grid */}
       {loading ? (
-        <div className="bg-white p-10 rounded-2xl border border-[#E2EAD6] text-center text-xs text-[#706161]">
+        <div className="bg-white p-10 rounded-2xl border border-[#DDEAE2] text-center text-xs text-[#706161]">
           Loading recruitment listings...
         </div>
       ) : filteredJobs.length === 0 ? (
-        <div className="bg-white p-10 rounded-2xl border border-[#E2EAD6] text-center text-xs text-[#706161]">
+        <div className="bg-white p-10 rounded-2xl border border-[#DDEAE2] text-center text-xs text-[#706161]">
           No job openings found matching your criteria.
         </div>
       ) : (
@@ -340,7 +340,7 @@ export default function RecruitmentSection() {
           {filteredJobs.map((job) => (
             <div
               key={job.id}
-              className="bg-white p-5 rounded-2xl border border-[#E2EAD6] shadow-by flex flex-col justify-between hover:border-[#A2FC4B]/60 transition-all group"
+              className="bg-white p-5 rounded-2xl border border-[#DDEAE2] shadow-by flex flex-col justify-between hover:border-[#45C512]/60 transition-all group"
             >
               <div>
                 {/* Header row */}
@@ -349,7 +349,7 @@ export default function RecruitmentSection() {
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#706161]">
                       {job.department}
                     </span>
-                    <h3 className="text-sm font-bold text-[#331E1E] mt-0.5 group-hover:text-[#234404] transition-colors">
+                    <h3 className="text-sm font-bold text-[#162E3D] mt-0.5 group-hover:text-[#234404] transition-colors">
                       {job.title}
                     </h3>
                   </div>
@@ -358,7 +358,7 @@ export default function RecruitmentSection() {
                     title="Click to toggle Open / Closed"
                     className={`px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all cursor-pointer ${
                       job.status === "open"
-                        ? "bg-[#EEFCD9] text-[#2c5306] border-[#A2FC4B]/60 hover:bg-[#d8f7a8]"
+                        ? "bg-[#EEFCD9] text-[#2c5306] border-[#45C512]/60 hover:bg-[#d8f7a8]"
                         : "bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200"
                     }`}
                   >
@@ -368,13 +368,13 @@ export default function RecruitmentSection() {
 
                 {/* Badges */}
                 <div className="flex flex-wrap items-center gap-2 mb-3 text-[11px]">
-                  <span className="px-2 py-0.5 rounded-md bg-[#F6FAF0] border border-[#E2EAD6] font-semibold text-[#331E1E]">
+                  <span className="px-2 py-0.5 rounded-md bg-[#F5F9F7] border border-[#DDEAE2] font-semibold text-[#162E3D]">
                     👥 {job.openingsCount} {job.openingsCount === 1 ? "opening" : "openings"}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md bg-[#F6FAF0] border border-[#E2EAD6] text-[#706161]">
+                  <span className="px-2 py-0.5 rounded-md bg-[#F5F9F7] border border-[#DDEAE2] text-[#706161]">
                     💼 {job.jobType}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md bg-[#F6FAF0] border border-[#E2EAD6] text-[#706161]">
+                  <span className="px-2 py-0.5 rounded-md bg-[#F5F9F7] border border-[#DDEAE2] text-[#706161]">
                     🎯 {job.experience}
                   </span>
                   <span className="text-[10px] text-[#706161] ml-auto font-mono">
@@ -393,7 +393,7 @@ export default function RecruitmentSection() {
                     {job.requirements.slice(0, 3).map((req, idx) => (
                       <span
                         key={idx}
-                        className="text-[10px] px-2 py-0.5 rounded bg-[#F6FAF0] text-[#331E1E] border border-[#E2EAD6] truncate max-w-full"
+                        className="text-[10px] px-2 py-0.5 rounded bg-[#F5F9F7] text-[#162E3D] border border-[#DDEAE2] truncate max-w-full"
                       >
                         ✓ {req}
                       </span>
@@ -403,10 +403,10 @@ export default function RecruitmentSection() {
               </div>
 
               {/* Actions Footer */}
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#E2EAD6]">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#DDEAE2]">
                 <button
                   onClick={() => openEditModal(job)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#331E1E] bg-[#F6FAF0] hover:bg-[#E2EAD6] rounded-xl transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#162E3D] bg-[#F5F9F7] hover:bg-[#DDEAE2] rounded-xl transition-colors cursor-pointer"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                   Edit Opening
@@ -426,9 +426,9 @@ export default function RecruitmentSection() {
 
       {/* ADD / EDIT JOB OPENING MODAL */}
       {(isAddModalOpen || editingJob) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#331E1E]/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white w-full max-w-lg rounded-2xl shadow-by-lg border border-[#E2EAD6] overflow-hidden">
-            <div className="px-6 py-4 bg-[#331E1E] text-white flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#162E3D]/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-by-lg border border-[#DDEAE2] overflow-hidden">
+            <div className="px-6 py-4 bg-[#162E3D] text-white flex items-center justify-between">
               <h3 className="text-sm font-bold font-serif uppercase tracking-wider">
                 {editingJob ? "Edit Job Opening" : "Post New Job Opening"}
               </h3>
@@ -452,7 +452,7 @@ export default function RecruitmentSection() {
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-bold text-[#331E1E]">
+                  <label className="text-xs font-bold text-[#162E3D]">
                     Job Title / Role *
                   </label>
                   <span className="text-[10px] text-[#706161]">
@@ -474,7 +474,7 @@ export default function RecruitmentSection() {
                     });
                   }}
                   placeholder="e.g. FullStack Developer, BDM, UI/UX Developer..."
-                  className="w-full px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B] text-[#331E1E]"
+                  className="w-full px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512] text-[#162E3D]"
                 />
                 <datalist id="agency-designations-list">
                   {AGENCY_DESIGNATIONS.map((d) => (
@@ -494,7 +494,7 @@ export default function RecruitmentSection() {
                           department: matchingDept || formData.department,
                         });
                       }}
-                      className="text-[10px] px-2 py-0.5 rounded-lg bg-[#F6FAF0] hover:bg-[#E2EAD6] text-[#331E1E] border border-[#E2EAD6] transition-colors cursor-pointer"
+                      className="text-[10px] px-2 py-0.5 rounded-lg bg-[#F5F9F7] hover:bg-[#DDEAE2] text-[#162E3D] border border-[#DDEAE2] transition-colors cursor-pointer"
                     >
                       + {d}
                     </button>
@@ -504,13 +504,13 @@ export default function RecruitmentSection() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#331E1E] mb-1">
+                  <label className="block text-xs font-bold text-[#162E3D] mb-1">
                     Department *
                   </label>
                   <select
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                    className="w-full px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                   >
                     {departments.map((d) => (
                       <option key={d} value={d}>
@@ -521,7 +521,7 @@ export default function RecruitmentSection() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#331E1E] mb-1">
+                  <label className="block text-xs font-bold text-[#162E3D] mb-1">
                     Number of Openings *
                   </label>
                   <input
@@ -533,12 +533,12 @@ export default function RecruitmentSection() {
                     onChange={(e) =>
                       setFormData({ ...formData, openingsCount: parseInt(e.target.value, 10) || 1 })
                     }
-                    className="w-full px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                    className="w-full px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#331E1E] mb-1">
+                  <label className="block text-xs font-bold text-[#162E3D] mb-1">
                     Job Type
                   </label>
                   <select
@@ -549,7 +549,7 @@ export default function RecruitmentSection() {
                         jobType: e.target.value as any,
                       })
                     }
-                    className="w-full px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                    className="w-full px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                   >
                     <option value="Full-time">Full-time</option>
                     <option value="Hybrid">Hybrid</option>
@@ -559,7 +559,7 @@ export default function RecruitmentSection() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#331E1E] mb-1">
+                  <label className="block text-xs font-bold text-[#162E3D] mb-1">
                     Experience Required
                   </label>
                   <input
@@ -567,13 +567,13 @@ export default function RecruitmentSection() {
                     value={formData.experience}
                     onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                     placeholder="e.g. 3-5 years"
-                    className="w-full px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                    className="w-full px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#331E1E] mb-1">
+                <label className="block text-xs font-bold text-[#162E3D] mb-1">
                   Status
                 </label>
                 <select
@@ -581,7 +581,7 @@ export default function RecruitmentSection() {
                   onChange={(e) =>
                     setFormData({ ...formData, status: e.target.value as "open" | "closed" })
                   }
-                  className="w-full px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                  className="w-full px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                 >
                   <option value="open">Open (Accepting Applicants)</option>
                   <option value="closed">Closed (Position Filled)</option>
@@ -589,7 +589,7 @@ export default function RecruitmentSection() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#331E1E] mb-1">
+                <label className="block text-xs font-bold text-[#162E3D] mb-1">
                   Job Description
                 </label>
                 <textarea
@@ -597,12 +597,12 @@ export default function RecruitmentSection() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Summarize key responsibilities and campaign ownership..."
-                  className="w-full px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                  className="w-full px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#331E1E] mb-1">
+                <label className="block text-xs font-bold text-[#162E3D] mb-1">
                   Key Requirements (One per line)
                 </label>
                 <textarea
@@ -610,25 +610,25 @@ export default function RecruitmentSection() {
                   value={formData.requirementsText}
                   onChange={(e) => setFormData({ ...formData, requirementsText: e.target.value })}
                   placeholder="3+ years scaling ad campaigns&#10;Expertise in GA4 and CRO&#10;Excellent communication skills"
-                  className="w-full px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                  className="w-full px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                 />
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#E2EAD6]">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#DDEAE2]">
                 <button
                   type="button"
                   onClick={() => {
                     setIsAddModalOpen(false);
                     setEditingJob(null);
                   }}
-                  className="px-4 py-2 text-xs font-semibold text-[#706161] hover:text-[#331E1E] rounded-xl transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[#706161] hover:text-[#162E3D] rounded-xl transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2.5 bg-[#331E1E] hover:bg-[#442828] text-[#A2FC4B] font-bold text-xs rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2.5 bg-[#162E3D] hover:bg-[#244254] text-[#45C512] font-bold text-xs rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-50"
                 >
                   {submitting ? "Saving..." : editingJob ? "Update Opening" : "Publish Opening"}
                 </button>
@@ -640,22 +640,22 @@ export default function RecruitmentSection() {
 
       {/* DELETE CONFIRMATION MODAL */}
       {deletingJob && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#331E1E]/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white w-full max-w-sm rounded-2xl shadow-by-lg border border-[#E2EAD6] p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#162E3D]/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white w-full max-w-sm rounded-2xl shadow-by-lg border border-[#DDEAE2] p-6 space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div className="text-center">
-              <h3 className="text-base font-bold text-[#331E1E]">Delete Opening</h3>
+              <h3 className="text-base font-bold text-[#162E3D]">Delete Opening</h3>
               <p className="text-xs text-[#706161] mt-1">
                 Are you sure you want to remove{" "}
-                <span className="font-bold text-[#331E1E]">{deletingJob.title}</span>?
+                <span className="font-bold text-[#162E3D]">{deletingJob.title}</span>?
               </p>
             </div>
             <div className="flex gap-2 pt-2">
               <button
                 onClick={() => setDeletingJob(null)}
-                className="flex-1 py-2.5 text-xs font-semibold text-[#706161] bg-[#F6FAF0] hover:bg-[#E2EAD6] rounded-xl transition-colors cursor-pointer"
+                className="flex-1 py-2.5 text-xs font-semibold text-[#706161] bg-[#F5F9F7] hover:bg-[#DDEAE2] rounded-xl transition-colors cursor-pointer"
               >
                 Cancel
               </button>

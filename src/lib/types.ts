@@ -14,12 +14,130 @@ export interface Employee {
   status: "active" | "inactive";
   password: string; // portal password
   avatarUrl?: string;
+  dob?: string; // Date of Birth (YYYY-MM-DD or DD/MM/YYYY)
+  addressLine1?: string; // Door/Flat & Street
+  addressLine2?: string; // Area / Locality
+  cityStatePin?: string; // City, State - Pincode
+  annualSalary?: number; // CTC in INR
+  monthlySalary?: number; // Monthly pay in INR
+  workTimings?: string;
+  signatoryName?: string;
+  signatoryTitle?: string;
+  visitingCard?: VisitingCardData;
   createdAt: string;
   updatedAt: string;
 }
 
+export interface VisitingCardData {
+  name: string;
+  designation: string;
+  phone: string;
+  email: string;
+  website: string;
+  address: string;
+  updatedAt?: string;
+}
+
 export type AttendanceStatus = "Present" | "Absent" | "Late" | "Half day" | "On Leave";
 export type WorkType = "Office" | "Remote (WFH)" | "Client Site";
+
+export type AttendanceTeam =
+  | "Sales"
+  | "Marketing"
+  | "Technical"
+  | "Management"
+  | "Support"
+  | "Human Resource";
+
+export const ATTENDANCE_TEAMS: AttendanceTeam[] = [
+  "Sales",
+  "Marketing",
+  "Technical",
+  "Management",
+  "Support",
+  "Human Resource",
+];
+
+export function getAttendanceTeam(employee: { designation?: string; department?: string }): AttendanceTeam {
+  const des = (employee?.designation || "").toLowerCase();
+  const dep = (employee?.department || "").toLowerCase();
+  const combined = `${des} ${dep}`;
+
+  if (
+    combined.includes("human resource") ||
+    combined.includes("people operations") ||
+    combined.includes("recruiter") ||
+    combined.includes("talent acquisition") ||
+    combined.includes("hr manager") ||
+    combined.includes("hr executive") ||
+    des === "hr" ||
+    des.includes(" hr") ||
+    des.includes("hr ") ||
+    dep === "hr" ||
+    dep.includes("hr")
+  ) {
+    return "Human Resource";
+  }
+
+  if (
+    combined.includes("managing director") ||
+    combined.includes("general manager") ||
+    combined.includes("executive leadership") ||
+    combined.includes("operations & management") ||
+    combined.includes("director") ||
+    (combined.includes("management") && !combined.includes("tech team manager"))
+  ) {
+    return "Management";
+  }
+
+  if (
+    combined.includes("tech") ||
+    combined.includes("developer") ||
+    combined.includes("engineer") ||
+    combined.includes("ui/ux") ||
+    combined.includes("graphic designer") ||
+    combined.includes("creative studio") ||
+    combined.includes("fullstack") ||
+    combined.includes("frontend") ||
+    combined.includes("backend")
+  ) {
+    return "Technical";
+  }
+
+  if (
+    combined.includes("seo") ||
+    combined.includes("marketing") ||
+    combined.includes("growth") ||
+    combined.includes("social media") ||
+    combined.includes("content") ||
+    combined.includes("organic")
+  ) {
+    return "Marketing";
+  }
+
+  if (
+    combined.includes("support") ||
+    combined.includes("customer success") ||
+    combined.includes("helpdesk")
+  ) {
+    return "Support";
+  }
+
+  if (
+    combined.includes("sales") ||
+    combined.includes("bdm") ||
+    combined.includes("bde") ||
+    combined.includes("business development") ||
+    combined.includes("telecall") ||
+    combined.includes("process associate") ||
+    combined.includes("outreach") ||
+    combined.includes("client outreach")
+  ) {
+    return "Sales";
+  }
+
+  return "Technical";
+}
 
 export interface Attendance {
   id: string;

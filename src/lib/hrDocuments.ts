@@ -10,18 +10,17 @@ export const WORKSPACE_BASE_DIR = process.env.VERCEL
   ? path.join(os.tmpdir(), "workspace")
   : path.join(process.cwd(), "workspace");
 
-export interface WorkspaceFileMetadata {
-  fileName: string;
-  category: "excel" | "word";
-  docType: "master_roster" | "appointment_letter" | "employee_dossier" | "nda_agreement";
-  employeeName?: string;
-  empId?: string;
-  sizeBytes: number;
-  sizeFormatted: string;
-  createdAt: string;
-  relativePath: string;
-  downloadUrl: string;
-}
+export * from "./offerLetterUtils";
+import {
+  WorkspaceFileMetadata,
+  OfferLetterData,
+  formatIndianCurrency,
+  numberToIndianWords,
+  getDefaultSalaryForDesignation,
+  escapeHtml,
+  formatLongDate,
+  formatSlashDate,
+} from "./offerLetterUtils";
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -74,8 +73,8 @@ export function generateEmployeeMasterExcel(): { xml: string; fileName: string }
   </Style>
   <Style ss:ID="BrandTitle">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
-   <Font ss:FontName="Georgia" ss:Size="18" ss:Bold="1" ss:Color="#331E1E"/>
-   <Interior ss:Color="#A2FC4B" ss:Pattern="Solid"/>
+   <Font ss:FontName="Georgia" ss:Size="18" ss:Bold="1" ss:Color="#162E3D"/>
+   <Interior ss:Color="#45C512" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="SubTitle">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
@@ -88,11 +87,11 @@ export function generateEmployeeMasterExcel(): { xml: string; fileName: string }
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A89898"/>
    </Borders>
    <Font ss:FontName="Calibri" ss:Size="10" ss:Bold="1" ss:Color="#FFFFFF"/>
-   <Interior ss:Color="#331E1E" ss:Pattern="Solid"/>
+   <Interior ss:Color="#162E3D" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="CellBold">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
-   <Font ss:FontName="Calibri" ss:Size="10" ss:Bold="1" ss:Color="#331E1E"/>
+   <Font ss:FontName="Calibri" ss:Size="10" ss:Bold="1" ss:Color="#162E3D"/>
   </Style>
   <Style ss:ID="CellLeft">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
@@ -240,7 +239,7 @@ function generateWordWrapper(title: string, bodyHtml: string): string {
     }
     body {
       font-family: 'Georgia', 'Times New Roman', serif;
-      color: #331E1E;
+      color: #162E3D;
       line-height: 1.6;
       font-size: 11pt;
       background-color: #ffffff;
@@ -248,12 +247,12 @@ function generateWordWrapper(title: string, bodyHtml: string): string {
     }
     h1, h2, h3 {
       font-family: 'Georgia', serif;
-      color: #331E1E;
+      color: #162E3D;
       margin-bottom: 8px;
     }
     .header-table {
       width: 100%;
-      border-bottom: 2pt solid #A2FC4B;
+      border-bottom: 2pt solid #45C512;
       padding-bottom: 12px;
       margin-bottom: 25px;
     }
@@ -261,7 +260,7 @@ function generateWordWrapper(title: string, bodyHtml: string): string {
       font-size: 20pt;
       font-weight: bold;
       letter-spacing: 2px;
-      color: #331E1E;
+      color: #162E3D;
       text-transform: uppercase;
     }
     .brand-sub {
@@ -271,8 +270,8 @@ function generateWordWrapper(title: string, bodyHtml: string): string {
     }
     .badge {
       display: inline-block;
-      background-color: #A2FC4B;
-      color: #331E1E;
+      background-color: #45C512;
+      color: #162E3D;
       padding: 4px 10px;
       font-size: 9pt;
       font-weight: bold;
@@ -281,8 +280,8 @@ function generateWordWrapper(title: string, bodyHtml: string): string {
     .section-title {
       font-size: 13pt;
       font-weight: bold;
-      color: #331E1E;
-      border-bottom: 1pt solid #E2EAD6;
+      color: #162E3D;
+      border-bottom: 1pt solid #DDEAE2;
       padding-bottom: 4px;
       margin-top: 18px;
       margin-bottom: 10px;
@@ -295,14 +294,14 @@ function generateWordWrapper(title: string, bodyHtml: string): string {
       margin-bottom: 20px;
     }
     table.data-table th {
-      background-color: #331E1E;
+      background-color: #162E3D;
       color: #ffffff;
       padding: 8px 12px;
       font-size: 10pt;
       text-align: left;
     }
     table.data-table td {
-      border: 1pt solid #E2EAD6;
+      border: 1pt solid #DDEAE2;
       padding: 8px 12px;
       font-size: 10pt;
     }
@@ -311,7 +310,7 @@ function generateWordWrapper(title: string, bodyHtml: string): string {
       width: 100%;
     }
     .signature-line {
-      border-top: 1pt solid #331E1E;
+      border-top: 1pt solid #162E3D;
       width: 200px;
       margin-top: 40px;
       font-size: 10pt;
@@ -333,107 +332,399 @@ function generateWordWrapper(title: string, bodyHtml: string): string {
 
   ${bodyHtml}
 
-  <div style="margin-top: 40px; font-size: 8pt; color: #706161; text-align: center; border-top: 1pt solid #E2EAD6; padding-top: 10px;">
+  <div style="margin-top: 40px; font-size: 8pt; color: #706161; text-align: center; border-top: 1pt solid #DDEAE2; padding-top: 10px;">
     B &amp; Y Technologies &bull; Confidential &bull; For Internal &amp; Employee Use Only
   </div>
 </body>
 </html>`;
 }
 
-// Generate Official Appointment Letter in Word (.doc)
-export function generateAppointmentLetterWord(emp: Employee): { doc: string; fileName: string } {
-  const today = new Date().toLocaleDateString("en-US", { dateStyle: "long" });
-  const fileName = `Appointment_Letter_${emp.empId}_${emp.name.replace(/\s+/g, "_")}.doc`;
 
-  const bodyHtml = `
-    <div style="text-align: right; font-size: 10pt; margin-bottom: 20px;">
-      <strong>Date:</strong> ${today}<br>
-      <strong>Ref:</strong> BYT/HR/APPT/${new Date().getFullYear()}/${emp.empId}
-    </div>
+function getLogoBadgeBase64(): string {
+  try {
+    const logoPath = path.join(process.cwd(), "public", "logo-badge.png");
+    if (fs.existsSync(logoPath)) {
+      return fs.readFileSync(logoPath).toString("base64");
+    }
+  } catch (e) {}
+  return "";
+}
 
-    <div style="margin-bottom: 20px;">
-      <strong>To:</strong><br>
-      <strong>${emp.name}</strong><br>
-      Employee ID: ${emp.empId}<br>
-      Contact: ${emp.phone}<br>
-      ${emp.email ? `Email: ${emp.email}` : ""}
-    </div>
+// =========================================================================
+// OFFICIAL 3-PAGE B&Y TECHNOLOGIES LETTER OF OFFER
+// =========================================================================
 
-    <h2 style="text-align: center; margin-bottom: 20px;">LETTER OF APPOINTMENT</h2>
+export function generateOfferLetterHtml(
+  dataInput: Partial<OfferLetterData> & { emp?: Employee },
+  isWord: boolean = false
+): string {
+  const emp = dataInput.emp;
+  const candidateName = (dataInput.candidateName || emp?.name || "Krish Babu").trim();
+  const empId = (dataInput.empId || emp?.empId || "BYT-101").trim();
+  const designation = (dataInput.designation || emp?.designation || "FullStack Developer").trim();
 
-    <p>Dear <strong>${emp.name}</strong>,</p>
+  const defaultSal = getDefaultSalaryForDesignation(designation);
+  const annualSalary = dataInput.annualSalary && dataInput.annualSalary > 0 ? dataInput.annualSalary : defaultSal.annual;
+  const monthlySalary = dataInput.monthlySalary && dataInput.monthlySalary > 0 ? dataInput.monthlySalary : Math.round(annualSalary / 12);
+  const annualSalaryWords = dataInput.annualSalaryWords || numberToIndianWords(annualSalary);
+  const formattedAnnualSalary = formatIndianCurrency(annualSalary);
+  const formattedMonthlySalary = formatIndianCurrency(monthlySalary);
 
-    <p>
-      On behalf of <strong>B &amp; Y Technologies</strong>, we are delighted to confirm your appointment for the position of 
-      <strong>${emp.designation}</strong> in the <strong>${emp.department}</strong> department, effective from 
-      <strong>${emp.dateOfJoining}</strong>.
-    </p>
+  const dob = dataInput.dob ? formatSlashDate(dataInput.dob) : "15/06/1998";
+  const addressLine1 = dataInput.addressLine1 || "No: 12, Anna Nagar 2nd Avenue,";
+  const addressLine2 = dataInput.addressLine2 || "Shenoy Nagar,";
+  const cityStatePin = dataInput.cityStatePin || "Chennai, Tamil Nadu - 600030";
 
-    <div class="section-title">1. Role &amp; Responsibilities</div>
-    <p>
-      In your capacity as <strong>${emp.designation}</strong>, you will report to the department head and executive management. 
-      You will be expected to perform the duties associated with your role diligently and contribute to client campaigns, strategic 
-      initiatives, and agency growth in alignment with our high performance benchmarks.
-    </p>
+  const dateOfJoining = dataInput.dateOfJoining || emp?.dateOfJoining || new Date().toISOString().split("T")[0];
+  const formattedDoj = formatSlashDate(dateOfJoining);
+  const offerDate = dataInput.offerDate || new Date().toISOString().split("T")[0];
+  const formattedOfferDate = formatLongDate(offerDate);
 
-    <div class="section-title">2. Place of Work &amp; Working Hours</div>
-    <p>
-      Your primary location of work will be the B &amp; Y Technologies Chennai Studio. Regular working hours are Monday through 
-      Saturday, 9:30 AM to 6:30 PM, with flexibility as required by project milestones and client deliverables.
-    </p>
+  const signatoryName = dataInput.signatoryName || "Babu B";
+  const signatoryTitle = dataInput.signatoryTitle || "Branch Manager";
+  const workTimings = dataInput.workTimings || "Monday to Friday - 9:30 am to 6:30 pm. | Saturday 9:30 am to 6:30 pm.";
 
-    <div class="section-title">3. Portal Login Credentials</div>
-    <p>
-      Your primary identifier for self-service portal access, attendance check-ins, and leave management is:
-    </p>
-    <table class="data-table" style="max-width: 400px;">
-      <tr>
-        <th style="width: 50%;">Portal Login ID</th>
-        <td><strong>${emp.empId}</strong></td>
-      </tr>
-      <tr>
-        <th>Designation</th>
-        <td>${emp.designation}</td>
-      </tr>
-      <tr>
-        <th>Status</th>
-        <td>Active Permanent</td>
-      </tr>
-    </table>
+  // Extract first name for salutation
+  const firstName = candidateName.split(" ")[0] || "Candidate";
+  const salutationPrefix = dataInput.salutationPrefix || "Mr./Ms.";
 
-    <div class="section-title">4. Confidentiality &amp; IP Protection</div>
-    <p>
-      During and following your employment with B &amp; Y Technologies, you shall maintain strict confidentiality regarding all client 
-      data, ad accounts, creative assets, software codes, strategies, and agency business operations.
-    </p>
+  const logoBase64 = getLogoBadgeBase64();
+  const logoImgSrc = logoBase64 ? `data:image/png;base64,${logoBase64}` : "/logo-badge.png";
 
-    <p>We welcome you to the B &amp; Y Technologies team and look forward to a mutually rewarding association.</p>
-
-    <table class="signature-box">
-      <tr>
-        <td style="width: 50%;">
-          Sincerely,<br>
-          <strong>For B &amp; Y Technologies</strong>
-          <div class="signature-line">
-            <strong>Authorized Signatory</strong><br>
-            Human Resources &amp; Operations
-          </div>
-        </td>
-        <td style="width: 50%; text-align: right;">
-          <div style="display: inline-block; text-align: left;">
-            Accepted by:<br>
-            <strong>${emp.name}</strong>
-            <div class="signature-line">
-              <strong>Employee Signature</strong><br>
-              Date: ____________________
-            </div>
-          </div>
-        </td>
-      </tr>
-    </table>
+  const cornerRibbonSvg = `
+    <svg width="130" height="70" viewBox="0 0 130 70" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+      <polygon points="35,0 130,0 130,70 65,70" fill="#19385C" />
+      <polygon points="0,0 55,0 108,70 52,70" fill="#45C512" />
+    </svg>
   `;
 
-  return { doc: generateWordWrapper(`Appointment Letter - ${emp.name}`, bodyHtml), fileName };
+  // Reusable Page Header matching Canva sample
+  const renderHeader = () => `
+    <div style="position: relative; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 1.5pt solid #DDEAE2;">
+      <div style="position: absolute; top: -14mm; right: -16mm; width: 130px; height: 70px; overflow: hidden; pointer-events: none; z-index: 2;">
+        ${cornerRibbonSvg}
+      </div>
+      <table style="width: 100%; border-collapse: collapse; position: relative; z-index: 1;">
+        <tr>
+          <td style="width: 65px; vertical-align: middle;">
+            <div style="position: relative; width: 58px; height: 58px; display: inline-block;">
+              <img src="${logoImgSrc}" alt="B&amp;Y Logo" style="width: 58px; height: 58px; border-radius: 50%; display: block;" />
+              <span style="position: absolute; top: -2px; right: -6px; font-size: 9pt; font-weight: bold; color: #19385C; font-family: serif;">&reg;</span>
+            </div>
+          </td>
+          <td style="vertical-align: middle; padding-left: 12px;">
+            <div style="font-family: 'Georgia', serif; font-size: 20pt; font-weight: bold; color: #19385C; letter-spacing: 0.5px; line-height: 1.1;">
+              B&amp;Y Technologies
+            </div>
+            <div style="font-family: 'Georgia', serif; font-size: 9pt; font-style: italic; color: #606060; margin-top: 3px;">
+              Together, we&#39;ll grow your business
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
+
+  // Reusable Watermark
+  const watermarkHtml = `
+    <div style="position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%) rotate(-32deg); font-family: 'Georgia', serif; font-size: 110pt; font-weight: bold; color: #19385C; opacity: 0.038; letter-spacing: 14px; pointer-events: none; z-index: 0; user-select: none;">
+      B&amp;Y
+    </div>
+  `;
+
+  // Reusable Page Footer matching Canva sample
+  const renderFooter = () => `
+    <div style="margin-top: auto; padding-top: 10px; position: relative; z-index: 1;">
+      <div style="font-size: 8pt; color: #555555; text-align: center; font-family: 'Calibri', Arial, sans-serif; line-height: 1.4;">
+        <span style="margin: 0 8px;">🌐 www.bnytechnologies.com</span> &bull;
+        <span style="margin: 0 8px;">📞 9941070555</span> &bull;
+        <span style="margin: 0 8px;">✉️ hr@bnytechnologies.in</span> &bull;
+        <span style="margin: 0 8px;">📍 No : 624 Khivraj Building 4th floor, Anna Salai Chennai-600006</span>
+      </div>
+      <div style="width: 100%; height: 5px; background: linear-gradient(90deg, #19385C 0%, #19385C 62%, #45C512 62%, #45C512 100%); margin-top: 8px; border-radius: 2px;"></div>
+    </div>
+  `;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Letter Of Offer - ${escapeHtml(candidateName)} - B&amp;Y Technologies</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
+    </w:WordDocument>
+  </xml>
+  <![endif]-->
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 12mm 15mm 15mm 15mm;
+      mso-header-margin: 0.3in;
+      mso-footer-margin: 0.3in;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+      color: #1a1a1a;
+      background-color: ${isWord ? "#ffffff" : "#f4f6f8"};
+      font-size: 9.8pt;
+      line-height: 1.5;
+    }
+    .page-container {
+      width: 210mm;
+      min-height: 297mm;
+      margin: ${isWord ? "0" : "20px auto"};
+      background: #ffffff;
+      padding: 14mm 16mm 14mm 16mm;
+      position: relative;
+      box-shadow: ${isWord ? "none" : "0 4px 24px rgba(0,0,0,0.12)"};
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      page-break-after: always;
+      break-after: page;
+    }
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .page-container {
+        margin: 0;
+        padding: 12mm 15mm;
+        width: 100%;
+        min-height: 297mm;
+        box-shadow: none;
+        page-break-after: always;
+        break-after: page;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+    .terms-ol {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 9.1pt;
+      line-height: 1.52;
+      color: #1f1f1f;
+    }
+    .terms-ol li {
+      margin-bottom: 7px;
+      text-align: justify;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== PAGE 1: LETTER OF OFFER ==================== -->
+  <div class="page-container">
+    ${watermarkHtml}
+    ${renderHeader()}
+
+    <div style="position: relative; z-index: 1; flex: 1;">
+      <div style="text-align: center; font-family: 'Georgia', serif; font-size: 19pt; font-weight: bold; color: #1E518A; letter-spacing: 0.5px; margin-top: 6px; margin-bottom: 8px;">
+        Letter Of Offer
+      </div>
+
+      <div style="text-align: right; font-size: 9.5pt; color: #222222; margin-bottom: 14px; font-weight: 500;">
+        ${formattedOfferDate}
+      </div>
+
+      <div style="margin-bottom: 16px; font-size: 9.5pt; line-height: 1.45; color: #222222;">
+        <div style="font-weight: 600; color: #333333; margin-bottom: 2px;">To,</div>
+        <div style="font-size: 11pt; font-weight: bold; color: #111111; text-transform: uppercase; letter-spacing: 0.5px;">
+          ${escapeHtml(candidateName.toUpperCase())}
+        </div>
+        <div style="margin: 3px 0; color: #2b2b2b;">
+          <span><strong>DOB :</strong> ${dob}</span>
+          <span style="margin-left: 20px;"><strong>Emp ID :</strong> ${empId}</span>
+        </div>
+        <div>${escapeHtml(addressLine1)}</div>
+        <div>${escapeHtml(addressLine2)}</div>
+        <div>${escapeHtml(cityStatePin)}</div>
+      </div>
+
+      <div style="font-size: 10pt; font-weight: bold; color: #19385C; margin-bottom: 12px;">
+        Dear ${salutationPrefix} ${escapeHtml(firstName)},
+      </div>
+
+      <p style="font-size: 9.5pt; line-height: 1.6; color: #262626; text-align: justify; margin-bottom: 16px;">
+        Thank you for exploring career opportunities with B &amp; Y Technologies. We are pleased to make you an offer as 
+        <strong>${escapeHtml(designation)}</strong> in B &amp; Y Technologies registered office 
+        <strong>624, Anna salai, 4th floor khivraj Building near gemini flyover chennai - 600 006</strong>. 
+        The key components of this offer.
+      </p>
+
+      <div style="margin: 14px 0 20px 0;">
+        <div style="margin-bottom: 12px; font-size: 9.5pt; line-height: 1.55;">
+          <strong style="color: #19385C;">Title :</strong> 
+          <span style="margin-left: 6px; font-weight: 600;">${escapeHtml(designation)}</span>
+        </div>
+
+        <div style="margin-bottom: 14px; font-size: 9.5pt; line-height: 1.55; text-align: justify;">
+          <strong style="color: #19385C;">Compensation :</strong> 
+          <span>Your Total Gross pay will be <strong>INR ${formattedAnnualSalary} (${annualSalaryWords})</strong> per annum. In addition you will be eligible for performance based incentives as advised from time to time.</span>
+        </div>
+
+        <div style="margin-bottom: 12px; font-size: 9.2pt; line-height: 1.55; color: #2c2c2c; text-align: justify;">
+          In the event you desire to leave the services of the company you are required to give one month&#39;s advance notice in writing. Failure to do so will result in forfeiture of 1 month&#39;s salary and incentives if any, due to you.
+        </div>
+
+        <div style="margin-bottom: 14px; font-size: 9.2pt; line-height: 1.55; color: #2c2c2c; text-align: justify;">
+          In the event that you are absent without permission for more than 3 days it will be deemed as your having absconded and having left the service of the company without providing notice.
+        </div>
+      </div>
+
+      <!-- PAGE 1 DUAL SIGNATURES -->
+      <div style="margin-top: 25px; padding-top: 10px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 9.5pt;">
+          <tr>
+            <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+              <div style="font-weight: bold; color: #19385C;">FOR B&amp;Y TECHNOLOGIES,</div>
+              <div style="margin-top: 30px; font-weight: bold; color: #111111; font-size: 10.5pt;">${escapeHtml(signatoryName)}</div>
+              <div style="color: #444444; font-size: 9.5pt;">${escapeHtml(signatoryTitle)}</div>
+              <div style="color: #666666; font-size: 9pt; margin-top: 4px;">${formattedOfferDate}</div>
+            </td>
+            <td style="width: 50%; vertical-align: top; padding-left: 15px;">
+              <div style="color: #333333; margin-bottom: 10px;">Accept the above stated terms of employment,</div>
+              <div style="margin-bottom: 6px;"><strong>Name :</strong> ${escapeHtml(candidateName)}</div>
+              <div style="margin-bottom: 6px;"><strong>Signature :</strong> _____________________________</div>
+              <div><strong>D.O.J :</strong> ${formattedDoj}</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    ${renderFooter()}
+  </div>
+
+  <br clear="all" style="mso-special-character:line-break;page-break-before:always" />
+
+  <!-- ==================== PAGE 2: ANNEXURE (GENERAL TERMS) ==================== -->
+  <div class="page-container">
+    ${watermarkHtml}
+    ${renderHeader()}
+
+    <div style="position: relative; z-index: 1; flex: 1;">
+      <div style="font-family: 'Georgia', serif; font-size: 16pt; font-weight: bold; color: #1E518A; margin-bottom: 2px;">
+        Annexure
+      </div>
+      <div style="font-family: 'Georgia', serif; font-size: 11pt; font-weight: bold; color: #19385C; margin-bottom: 12px;">
+        General Terms:
+      </div>
+
+      <ol class="terms-ol">
+        <li>You will be entitled to a Salary of <strong>₹${formattedMonthlySalary}/- per month</strong>.</li>
+        <li>Your performance will be reviewed in 12 months and your Salary will be subsequently revised based on satisfactory performance.</li>
+        <li>Work timings are as <strong>${escapeHtml(workTimings)}</strong>.</li>
+        <li>Monthly payments would be paid after deductions of any loans or advances received from the firm.</li>
+        <li>Your reporting and responsibilities will be advised to you by your superior or any person nominated by him/her.</li>
+        <li>You shall, while in the services of the firm, devote your time and attention to the Firm&#39;s work and responsibilities assigned to you.</li>
+        <li>It is expected that you will discharge your assigned responsibilities with high standards of performance, quality, integrity, and discipline.</li>
+        <li>In this role, the company will provide hardware equipment / design software. When necessary, you will be given access to licensed / web-based software. You are required to use the access only for Company purposes.</li>
+        <li>You shall, while in the services of the firm, be responsible for delivering the projects assigned to you on time. You will be expected to work with the team toward the Firm&#39;s goals.</li>
+        <li>You shall be obliged to follow the work processes, technical standards, protocols and general instructions issued thereto, and service rules of the Firm as in force and/or amended from time to time.</li>
+        <li>The Company expects all employees to cooperate in day-to-day operations, and it is an essential feature of this job that you will be expected to work additional hours from time to time to meet business / operational needs. The additional hours may involve working weekends or Public Holidays.</li>
+        <li>Poaching of B&amp;Y Technologies clients or its Partners will not be tolerated while in service of B&amp;Y Technologies and within 2 years of exiting B&amp;Y Technologies as an employee.</li>
+        <li>Any intellectual property created by the employee during the course of employment will be the property of the company. The employee agrees to assign any right, title, and interest in such work to the company.</li>
+        <li>Freelancing or engaging in any independent work with any of the Company&#39;s clients or via their connections will not be tolerated while in service of the Company and within two years of exiting the Company as an employee.</li>
+        <li>Upon termination of employment, you will also return all firm property, which may be in your possession including intellectual property and artworks.</li>
+        <li>It would be obligatory on your part to get a proper relieving letter from the Management before your services are deemed to be concluded. On mutual agreement between the firm and the employee, there will be a one-month notice.</li>
+      </ol>
+    </div>
+
+    ${renderFooter()}
+  </div>
+
+  <br clear="all" style="mso-special-character:line-break;page-break-before:always" />
+
+  <!-- ==================== PAGE 3: CODE OF CONDUCT & ACCEPTANCE ==================== -->
+  <div class="page-container">
+    ${watermarkHtml}
+    ${renderHeader()}
+
+    <div style="position: relative; z-index: 1; flex: 1;">
+      <div style="font-family: 'Georgia', serif; font-size: 16pt; font-weight: bold; color: #1E518A; margin-bottom: 10px;">
+        Code of Conduct:
+      </div>
+
+      <ol class="terms-ol">
+        <li>In all other matters on disciplinary grounds or any other matter, you will be governed by the rules as in force or which may be enforced from time to time.</li>
+        <li>Your remuneration is purely a matter between yourself and the firm and has been arrived at based on your job, skills, specific background and professional merit. Accordingly, your salary and any changes made to it are strictly confidential; you shall treat such matters accordingly, and any breach thereof would be viewed very seriously.</li>
+        <li>You shall maintain proper discipline and dignity of your office and so shall deal with all matters.</li>
+        <li>You shall maintain and keep in your safe custody all intellectual property of our clients and keep a backup of all your work for B&amp;Y Technologies and its clients.</li>
+        <li>All intellectual property and artworks that you create for B&amp;Y Technologies and its clients will belong to B&amp;Y Technologies and should not be published elsewhere.</li>
+        <li>You shall inform the Firm of any changes in your personal data within 3 days of the occurrence of such change.</li>
+        <li>You shall inform the Firm / Management of any cash payments received on the spot as a first priority, failing which you will be held liable.</li>
+        <li>You shall be solely responsible for any issues that may arise between you and your previous employer or any other personal dealings will remain personal and the Firm or any of its personnel are not responsible for the same.</li>
+        <li>Salary comparison between colleagues will not be entertained and is prohibited.</li>
+        <li>Financial details of the Firm and projects the firm is working on should not be shared or discussed with outsiders of the firm.</li>
+        <li>The Firm has the right to terminate employment within any time from the date of joining without any notice period. This only happens if the Firm does not find your work or conduct suitable or in the firm&#39;s best interest.</li>
+        <li>After 3 months, if the Firm does not find your work or conduct suitable or in the best interest of the Firm, the termination notice period will be 2 weeks. At which point you are to return all intellectual property to the Firm.</li>
+        <li>In cases of Gross Misconduct, the Company has the right to terminate your employment and no notice pay will be due, any days worked up to your termination will be paid. No salary will be paid post this date.</li>
+        <li>Any notice required to be given to you shall be deemed to have been duly and properly given if delivered to you personally or sent by post to you at your address, as recorded in the Firm.</li>
+        <li><strong>As per company policy, 7 days&#39; salary will be kept on hold as a security / settlement period during the employee&#39;s separation process. The held salary will be released and credited to the employee after proper relieving from the firm, including completion of the required notice period, handover of responsibilities, return of company assets, and completion of all exit formalities. The payment will be processed along with the applicable salary / settlement cycle after successful completion of the relieving formalities.</strong></li>
+      </ol>
+
+      <div style="font-size: 9.2pt; color: #222222; margin: 12px 0 14px 0; font-weight: 500;">
+        In response to this communication of appointment, you are required to confirm your acceptance by signing this letter below.
+      </div>
+
+      <!-- PAGE 3 DUAL SIGNATURES -->
+      <div style="margin-top: 14px; padding-top: 8px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 9.5pt;">
+          <tr>
+            <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+              <div style="font-weight: bold; color: #19385C;">FOR B&amp;Y TECHNOLOGIES,</div>
+              <div style="margin-top: 30px; font-weight: bold; color: #111111; font-size: 10.5pt;">${escapeHtml(signatoryName)}</div>
+              <div style="color: #444444; font-size: 9.5pt;">${escapeHtml(signatoryTitle)}</div>
+            </td>
+            <td style="width: 50%; vertical-align: top; padding-left: 15px;">
+              <div style="color: #333333; margin-bottom: 10px;">Accept the above stated terms of employment,</div>
+              <div style="margin-bottom: 6px;"><strong>Name :</strong> ${escapeHtml(candidateName)}</div>
+              <div style="margin-bottom: 6px;"><strong>Signature :</strong> _____________________________</div>
+              <div><strong>D.O.J :</strong> ${formattedDoj}</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    ${renderFooter()}
+  </div>
+
+</body>
+</html>`;
+}
+
+// Generate Official 3-Page Letter Of Offer in Word (.doc)
+export function generateOfferLetterWord(
+  dataInput: Partial<OfferLetterData> & { emp?: Employee }
+): { doc: string; fileName: string } {
+  const emp = dataInput.emp;
+  const candidateName = (dataInput.candidateName || emp?.name || "Candidate").trim();
+  const empId = (dataInput.empId || emp?.empId || "BYT-101").trim();
+  const fileName = `Letter_Of_Offer_${empId}_${candidateName.replace(/\s+/g, "_")}.doc`;
+  const doc = generateOfferLetterHtml(dataInput, true);
+  return { doc, fileName };
+}
+
+// Backwards-compatible alias for Appointment Letter
+export function generateAppointmentLetterWord(emp: Employee): { doc: string; fileName: string } {
+  return generateOfferLetterWord({ emp });
 }
 
 // Generate Complete Employee Dossier in Word (.doc)
@@ -611,8 +902,9 @@ export function generateNdaAgreementWord(emp: Employee): { doc: string; fileName
 // =========================================================================
 
 export async function saveWorkspaceDocumentStream(
-  docType: "master_roster" | "appointment_letter" | "employee_dossier" | "nda_agreement",
-  empId?: string
+  docType: "master_roster" | "appointment_letter" | "offer_letter" | "employee_dossier" | "nda_agreement",
+  empId?: string,
+  customOfferData?: Partial<OfferLetterData>
 ): Promise<WorkspaceFileMetadata> {
   ensureWorkspaceDirs();
 
@@ -634,11 +926,11 @@ export async function saveWorkspaceDocumentStream(
     targetDir = path.join(WORKSPACE_BASE_DIR, "word");
     const employees = getEmployees();
     const emp = employees.find((e) => e.empId === empId || e.id === empId) || employees[0];
-    empName = emp.name;
-    employeeId = emp.empId;
+    empName = customOfferData?.candidateName || emp?.name;
+    employeeId = customOfferData?.empId || emp?.empId;
 
-    if (docType === "appointment_letter") {
-      const res = generateAppointmentLetterWord(emp);
+    if (docType === "offer_letter" || docType === "appointment_letter") {
+      const res = generateOfferLetterWord({ emp, ...customOfferData });
       content = res.doc;
       fileName = res.fileName;
     } else if (docType === "employee_dossier") {
@@ -692,7 +984,7 @@ export function getWorkspaceFiles(): WorkspaceFileMetadata[] {
         const relativePath = path.relative(WORKSPACE_BASE_DIR, fullPath).replace(/\\/g, "/");
 
         let docType: WorkspaceFileMetadata["docType"] = "master_roster";
-        if (entry.name.includes("Appointment")) docType = "appointment_letter";
+        if (entry.name.includes("Offer") || entry.name.includes("Appointment")) docType = "offer_letter";
         else if (entry.name.includes("Dossier")) docType = "employee_dossier";
         else if (entry.name.includes("NDA")) docType = "nda_agreement";
 

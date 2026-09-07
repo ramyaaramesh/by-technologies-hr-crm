@@ -10,6 +10,7 @@ import {
   AdminCredentials,
   ChatMessage,
   ChatChannel,
+  VisitingCardData,
 } from "./types";
 
 interface DatabaseSchema {
@@ -132,563 +133,116 @@ export function getDefaultMessages(): ChatMessage[] {
 }
 
 function generateSeedData(): DatabaseSchema {
-  const today = new Date();
-  const todayStr = formatDate(today);
-
-  // Yesterday and earlier days
-  const dMinus1 = new Date(today);
-  dMinus1.setDate(today.getDate() - 1);
-  const dMinus1Str = formatDate(dMinus1);
-
-  const dMinus2 = new Date(today);
-  dMinus2.setDate(today.getDate() - 2);
-  const dMinus2Str = formatDate(dMinus2);
-
-  const dMinus3 = new Date(today);
-  dMinus3.setDate(today.getDate() - 3);
-  const dMinus3Str = formatDate(dMinus3);
-
-  const employees: Employee[] = [
-    {
-      id: "emp_1",
-      empId: "BYT-101",
-      name: "Anand Kumar",
-      email: "anand@bytechnologies.com",
-      phone: "+91 98401 11223",
-      designation: "Managing Director",
-      department: "Executive Leadership",
-      dateOfJoining: "2021-01-10",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2021-01-10T09:00:00.000Z",
-      updatedAt: "2021-01-10T09:00:00.000Z",
-    },
-    {
-      id: "emp_2",
-      empId: "BYT-102",
-      name: "Kavitha Sundaram",
-      email: "kavitha@bytechnologies.com",
-      phone: "+91 98402 22334",
-      designation: "General Manager",
-      department: "Operations & Management",
-      dateOfJoining: "2021-06-15",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2021-06-15T09:00:00.000Z",
-      updatedAt: "2021-06-15T09:00:00.000Z",
-    },
-    {
-      id: "emp_3",
-      empId: "BYT-103",
-      name: "Radhika Menon",
-      email: "radhika@bytechnologies.com",
-      phone: "+91 98403 33445",
-      designation: "HR",
-      department: "People Operations & HR",
-      dateOfJoining: "2022-02-01",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2022-02-01T09:00:00.000Z",
-      updatedAt: "2022-02-01T09:00:00.000Z",
-    },
-    {
-      id: "emp_4",
-      empId: "BYT-104",
-      name: "Vikram Raman",
-      email: "vikram@bytechnologies.com",
-      phone: "+91 98404 44556",
-      designation: "Tech Team Manager",
-      department: "Web & Tech Engineering",
-      dateOfJoining: "2022-05-10",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2022-05-10T09:00:00.000Z",
-      updatedAt: "2022-05-10T09:00:00.000Z",
-    },
-    {
-      id: "emp_5",
-      empId: "BYT-105",
-      name: "Karthik Venkat",
-      email: "karthik.v@bytechnologies.com",
-      phone: "+91 98405 55667",
-      designation: "Sr BDM",
-      department: "Business Development & Sales",
-      dateOfJoining: "2022-08-15",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2022-08-15T09:00:00.000Z",
-      updatedAt: "2022-08-15T09:00:00.000Z",
-    },
-    {
-      id: "emp_6",
-      empId: "BYT-106",
-      name: "Rahul Verma",
-      email: "rahul@bytechnologies.com",
-      phone: "+91 98406 66778",
-      designation: "BDM",
-      department: "Business Development & Sales",
-      dateOfJoining: "2023-01-20",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2023-01-20T09:00:00.000Z",
-      updatedAt: "2023-01-20T09:00:00.000Z",
-    },
-    {
-      id: "emp_7",
-      empId: "BYT-107",
-      name: "Pooja Nair",
-      email: "pooja@bytechnologies.com",
-      phone: "+91 98407 77889",
-      designation: "BDE",
-      department: "Business Development & Sales",
-      dateOfJoining: "2023-03-15",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2023-03-15T09:00:00.000Z",
-      updatedAt: "2023-03-15T09:00:00.000Z",
-    },
-    {
-      id: "emp_8",
-      empId: "BYT-108",
-      name: "Priya Sharma",
-      email: "priya@bytechnologies.com",
-      phone: "+91 98408 88990",
-      designation: "Team Leader (Telecaller)",
-      department: "Client Outreach & Telecalling",
-      dateOfJoining: "2023-04-10",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2023-04-10T09:00:00.000Z",
-      updatedAt: "2023-04-10T09:00:00.000Z",
-    },
-    {
-      id: "emp_9",
-      empId: "BYT-109",
-      name: "Dinesh Raj",
-      email: "dinesh@bytechnologies.com",
-      phone: "+91 98409 99001",
-      designation: "Process Associate",
-      department: "Client Outreach & Telecalling",
-      dateOfJoining: "2023-07-01",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2023-07-01T09:00:00.000Z",
-      updatedAt: "2023-07-01T09:00:00.000Z",
-    },
-    {
-      id: "emp_10",
-      empId: "BYT-110",
-      name: "Arjun Swaminathan",
-      email: "arjun@bytechnologies.com",
-      phone: "+91 98410 10101",
-      designation: "FullStack Developer",
-      department: "Web & Tech Engineering",
-      dateOfJoining: "2023-09-15",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2023-09-15T09:00:00.000Z",
-      updatedAt: "2023-09-15T09:00:00.000Z",
-    },
-    {
-      id: "emp_11",
-      empId: "BYT-111",
-      name: "Ananya Nair",
-      email: "ananya@bytechnologies.com",
-      phone: "+91 98411 11212",
-      designation: "UI/UX Developer",
-      department: "Creative Studio",
-      dateOfJoining: "2023-10-01",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2023-10-01T09:00:00.000Z",
-      updatedAt: "2023-10-01T09:00:00.000Z",
-    },
-    {
-      id: "emp_12",
-      empId: "BYT-112",
-      name: "Suresh Prabhu",
-      email: "suresh@bytechnologies.com",
-      phone: "+91 98412 12323",
-      designation: "Sr SEO Analyst",
-      department: "SEO & Organic Growth",
-      dateOfJoining: "2023-11-15",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2023-11-15T09:00:00.000Z",
-      updatedAt: "2023-11-15T09:00:00.000Z",
-    },
-    {
-      id: "emp_13",
-      empId: "BYT-113",
-      name: "Sneha Patel",
-      email: "sneha@bytechnologies.com",
-      phone: "+91 98413 13434",
-      designation: "SEO Analyst",
-      department: "SEO & Organic Growth",
-      dateOfJoining: "2024-01-10",
-      status: "active",
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2024-01-10T09:00:00.000Z",
-      updatedAt: "2024-01-10T09:00:00.000Z",
-    },
-    {
-      id: "emp_14",
-      empId: "BYT-114",
-      name: "Meera Iyer",
-      email: "meera@bytechnologies.com",
-      phone: "+91 98414 14545",
-      designation: "Customer Support",
-      department: "Customer Support & Success",
-      dateOfJoining: "2024-02-01",
-      status: "inactive", // Inactive account for testing status checks
-      password: "password123",
-      avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
-      createdAt: "2024-02-01T09:00:00.000Z",
-      updatedAt: "2024-02-01T09:00:00.000Z",
-    },
-  ];
-
-  const attendance: Attendance[] = [
-    // Today's records
-    {
-      id: "att_1",
-      employeeId: "emp_1",
-      date: todayStr,
-      status: "Present",
-      checkInTime: "09:12 AM",
-      checkOutTime: "06:15 PM",
-      notes: "In Office - Main Studio",
-      createdAt: `${todayStr}T09:12:00.000Z`,
-      updatedAt: `${todayStr}T18:15:00.000Z`,
-    },
-    {
-      id: "att_2",
-      employeeId: "emp_2",
-      date: todayStr,
-      status: "Late",
-      checkInTime: "10:05 AM",
-      checkOutTime: "06:45 PM",
-      notes: "Client review call delay",
-      createdAt: `${todayStr}T10:05:00.000Z`,
-      updatedAt: `${todayStr}T18:45:00.000Z`,
-    },
-    {
-      id: "att_3",
-      employeeId: "emp_3",
-      date: todayStr,
-      status: "Half day",
-      checkInTime: "09:30 AM",
-      checkOutTime: "01:45 PM",
-      notes: "Approved doctor appointment in PM",
-      createdAt: `${todayStr}T09:30:00.000Z`,
-      updatedAt: `${todayStr}T13:45:00.000Z`,
-    },
-    {
-      id: "att_4",
-      employeeId: "emp_4",
-      date: todayStr,
-      status: "Present",
-      checkInTime: "09:05 AM",
-      checkOutTime: "",
-      notes: "Remote - Tech Sprint",
-      createdAt: `${todayStr}T09:05:00.000Z`,
-      updatedAt: `${todayStr}T09:05:00.000Z`,
-    },
-    {
-      id: "att_5",
-      employeeId: "emp_5",
-      date: todayStr,
-      status: "Absent",
-      checkInTime: "",
-      checkOutTime: "",
-      notes: "Casual Leave applied",
-      createdAt: `${todayStr}T09:00:00.000Z`,
-      updatedAt: `${todayStr}T09:00:00.000Z`,
-    },
-    {
-      id: "att_6",
-      employeeId: "emp_6",
-      date: todayStr,
-      status: "Present",
-      checkInTime: "09:10 AM",
-      checkOutTime: "",
-      notes: "Client meetings scheduled",
-      createdAt: `${todayStr}T09:10:00.000Z`,
-      updatedAt: `${todayStr}T09:10:00.000Z`,
-    },
-    // Past days records for Priya (emp_1)
-    {
-      id: "att_p1",
-      employeeId: "emp_1",
-      date: dMinus1Str,
-      status: "Present",
-      checkInTime: "09:15 AM",
-      checkOutTime: "06:30 PM",
-      notes: "Organic SEO Audit client report",
-      createdAt: `${dMinus1Str}T09:15:00.000Z`,
-      updatedAt: `${dMinus1Str}T18:30:00.000Z`,
-    },
-    {
-      id: "att_p2",
-      employeeId: "emp_1",
-      date: dMinus2Str,
-      status: "Present",
-      checkInTime: "09:08 AM",
-      checkOutTime: "06:12 PM",
-      notes: "Content cluster launch",
-      createdAt: `${dMinus2Str}T09:08:00.000Z`,
-      updatedAt: `${dMinus2Str}T18:12:00.000Z`,
-    },
-    {
-      id: "att_p3",
-      employeeId: "emp_1",
-      date: dMinus3Str,
-      status: "Late",
-      checkInTime: "09:55 AM",
-      checkOutTime: "06:40 PM",
-      notes: "Metro delay",
-      createdAt: `${dMinus3Str}T09:55:00.000Z`,
-      updatedAt: `${dMinus3Str}T18:40:00.000Z`,
-    },
-  ];
-
-  const leaves: LeaveRequest[] = [
-    {
-      id: "lev_1",
-      employeeId: "emp_5",
-      employeeName: "Sneha Patel",
-      department: "Social Media & PR",
-      leaveType: "Casual Leave",
-      fromDate: todayStr,
-      toDate: todayStr,
-      days: 1,
-      reason: "Attending sister's engagement ceremony",
-      status: "Approved",
-      appliedDate: dMinus2Str,
-      reviewedAt: `${dMinus1Str}T14:30:00.000Z`,
-      reviewNote: "Approved by HR. Have a great time!",
-      createdAt: `${dMinus2Str}T10:00:00.000Z`,
-    },
-    {
-      id: "lev_2",
-      employeeId: "emp_1",
-      employeeName: "Priya Sharma",
-      department: "SEO & Organic Growth",
-      leaveType: "Paid Time Off",
-      fromDate: "2026-09-15",
-      toDate: "2026-09-18",
-      days: 4,
-      reason: "Annual family vacation travel",
-      status: "Pending",
-      appliedDate: dMinus1Str,
-      createdAt: `${dMinus1Str}T16:20:00.000Z`,
-    },
-    {
-      id: "lev_3",
-      employeeId: "emp_2",
-      employeeName: "Rahul Verma",
-      department: "Paid Advertising",
-      leaveType: "Sick Leave",
-      fromDate: dMinus3Str,
-      toDate: dMinus3Str,
-      days: 1,
-      reason: "Severe migraine and fever",
-      status: "Approved",
-      appliedDate: dMinus3Str,
-      reviewedAt: `${dMinus3Str}T11:00:00.000Z`,
-      reviewNote: "Approved. Take care.",
-      createdAt: `${dMinus3Str}T08:30:00.000Z`,
-    },
-    {
-      id: "lev_4",
-      employeeId: "emp_4",
-      employeeName: "Vikram Raman",
-      department: "Web & Tech Engineering",
-      leaveType: "Half Day Leave",
-      fromDate: "2026-09-22",
-      toDate: "2026-09-22",
-      days: 0.5,
-      reason: "Bank documentation and passport renewal",
-      status: "Pending",
-      appliedDate: todayStr,
-      createdAt: `${todayStr}T10:15:00.000Z`,
-    },
-    {
-      id: "lev_5",
-      employeeId: "emp_3",
-      employeeName: "Ananya Nair",
-      department: "Creative Studio",
-      leaveType: "Casual Leave",
-      fromDate: "2026-08-10",
-      toDate: "2026-08-12",
-      days: 3,
-      reason: "Extended weekend trip",
-      status: "Rejected",
-      appliedDate: "2026-08-01",
-      reviewedAt: "2026-08-02T10:00:00.000Z",
-      reviewNote: "Major brand pitch deliverable during this period. Please reschedule.",
-      createdAt: "2026-08-01T15:00:00.000Z",
-    },
-  ];
-
-  const loginLogs: LoginLog[] = [
-    {
-      id: "log_1",
-      employeeId: "emp_1",
-      employeeName: "Priya Sharma",
-      email: "priya@bytechnologies.com",
-      loginTime: `${todayStr}T09:12:35.000Z`,
-      ipAddress: "192.168.1.42",
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/128.0",
-    },
-    {
-      id: "log_2",
-      employeeId: "emp_2",
-      employeeName: "Rahul Verma",
-      email: "rahul@bytechnologies.com",
-      loginTime: `${todayStr}T10:05:12.000Z`,
-      ipAddress: "192.168.1.68",
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/127.0",
-    },
-    {
-      id: "log_3",
-      employeeId: "emp_4",
-      employeeName: "Vikram Raman",
-      email: "vikram@bytechnologies.com",
-      loginTime: `${todayStr}T09:05:54.000Z`,
-      ipAddress: "49.37.12.189",
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/129.0",
-    },
-    {
-      id: "log_4",
-      employeeId: "emp_6",
-      employeeName: "Karthik Sundaram",
-      email: "karthik@bytechnologies.com",
-      loginTime: `${todayStr}T09:10:02.000Z`,
-      ipAddress: "192.168.1.15",
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/17.5",
-    },
-    {
-      id: "log_5",
-      employeeId: "emp_1",
-      employeeName: "Priya Sharma",
-      email: "priya@bytechnologies.com",
-      loginTime: `${dMinus1Str}T09:15:10.000Z`,
-      ipAddress: "192.168.1.42",
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/128.0",
-    },
-  ];
-
-  const jobs: JobOpening[] = [
-    {
-      id: "job_1",
-      title: "Senior Performance Marketing Strategist",
-      department: "Paid Advertising",
-      openingsCount: 2,
-      status: "open",
-      postedDate: "2026-08-20",
-      experience: "3-5 years",
-      jobType: "Full-time",
-      description: "Manage scale Meta and Google Ads campaigns with >$100k/mo spend. Drive ROAS, deep CRO analysis, and attribution modeling for global e-commerce and SaaS brands.",
-      requirements: [
-        "Proven track record scaling Meta/Google Ad accounts",
-        "Expertise in Google Analytics 4, Tag Manager, and looker studio",
-        "Strong analytical mindset and client presentation skills",
-      ],
-      createdAt: "2026-08-20T10:00:00.000Z",
-      updatedAt: "2026-08-20T10:00:00.000Z",
-    },
-    {
-      id: "job_2",
-      title: "Technical SEO & Content Lead",
-      department: "SEO & Organic Growth",
-      openingsCount: 1,
-      status: "open",
-      postedDate: "2026-08-25",
-      experience: "4+ years",
-      jobType: "Hybrid",
-      description: "Oversee enterprise SEO audits, site migrations, Core Web Vitals optimization, programmatic SEO strategies, and content clustering for client websites.",
-      requirements: [
-        "Deep technical SEO knowledge (Screaming Frog, Ahrefs, SEMrush)",
-        "Core Web Vitals and JavaScript rendering expertise",
-        "Experience leading cross-functional content and dev workflows",
-      ],
-      createdAt: "2026-08-25T11:30:00.000Z",
-      updatedAt: "2026-08-25T11:30:00.000Z",
-    },
-    {
-      id: "job_3",
-      title: "Senior UI/UX & Motion Designer",
-      department: "Creative Studio",
-      openingsCount: 1,
-      status: "open",
-      postedDate: "2026-09-01",
-      experience: "3+ years",
-      jobType: "Full-time",
-      description: "Craft high-converting ad creatives, interactive landing page prototypes, and complete brand identity packages for top-tier digital campaigns.",
-      requirements: [
-        "Proficiency in Figma, Adobe After Effects, and Illustrator",
-        "Solid portfolio showcasing performance ad creatives and landing pages",
-        "Understanding of conversion rate optimization (CRO) principles",
-      ],
-      createdAt: "2026-09-01T09:00:00.000Z",
-      updatedAt: "2026-09-01T09:00:00.000Z",
-    },
-    {
-      id: "job_4",
-      title: "Junior Social Media Specialist",
-      department: "Social Media & PR",
-      openingsCount: 1,
-      status: "closed",
-      postedDate: "2026-07-10",
-      experience: "1-2 years",
-      jobType: "Full-time",
-      description: "Manage editorial calendars, community engagement, and influencer collaborations across Instagram, LinkedIn, and TikTok.",
-      requirements: [
-        "Strong short-form video editing and copywriting chops",
-        "Familiarity with Sprout Social or Buffer",
-        "Creative curiosity and pop-culture awareness",
-      ],
-      createdAt: "2026-07-10T14:00:00.000Z",
-      updatedAt: "2026-08-15T10:00:00.000Z",
-    },
-  ];
-
   return {
     admin: {
       name: "admin",
       password: "admin123",
     },
-    employees,
-    attendance,
-    leaves,
-    loginLogs,
-    jobs,
-    chatMessages: getDefaultMessages(),
+    employees: [],
+    attendance: [],
+    leaves: [],
+    loginLogs: [],
+    jobs: [],
+    chatMessages: [],
     chatChannels: getDefaultChannels(),
   };
 }
 
 let inMemoryDb: DatabaseSchema | null = null;
+const TOMBSTONE_PATH = path.join(os.tmpdir(), "by_technologies_deleted_ids.json");
+const inMemoryDeletedIds = new Set<string>();
 
-export function readDatabase(): DatabaseSchema {
-  if (inMemoryDb) {
-    return inMemoryDb;
+function loadTombstones(): Set<string> {
+  try {
+    if (fs.existsSync(TOMBSTONE_PATH)) {
+      const raw = fs.readFileSync(TOMBSTONE_PATH, "utf-8");
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) {
+        list.forEach((id: string) => inMemoryDeletedIds.add(id.toLowerCase()));
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+  return inMemoryDeletedIds;
+}
+
+export function recordDeletedId(id: string): void {
+  if (!id) return;
+  inMemoryDeletedIds.add(id.trim().toLowerCase());
+  try {
+    fs.writeFileSync(TOMBSTONE_PATH, JSON.stringify(Array.from(inMemoryDeletedIds)), "utf-8");
+  } catch (e) {
+    // ignore
+  }
+}
+
+export function getDeletedIds(): string[] {
+  loadTombstones();
+  return Array.from(inMemoryDeletedIds);
+}
+
+// Vercel Blob Cloud Persistence Helpers
+async function loadFromBlob(): Promise<DatabaseSchema | null> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.BLOB_STORE_ID) {
+    return null;
   }
   try {
+    const { get } = await import("@vercel/blob");
+    let res = null;
+    try {
+      res = await get("hrms_database.json", { access: "private", useCache: false });
+    } catch {
+      try {
+        res = await get("hrms_database.json", { access: "public", useCache: false });
+      } catch {}
+    }
+    if (res && res.statusCode === 200 && res.stream) {
+      const text = await new Response(res.stream).text();
+      const parsed = JSON.parse(text) as DatabaseSchema;
+      return parsed;
+    }
+  } catch (err) {
+    console.warn("[Vercel Blob] Read warning:", err);
+  }
+  return null;
+}
+
+async function saveToBlob(data: DatabaseSchema): Promise<boolean> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.BLOB_STORE_ID) {
+    return false;
+  }
+  try {
+    const { put } = await import("@vercel/blob");
+    const jsonStr = JSON.stringify(data, null, 2);
+    try {
+      await put("hrms_database.json", jsonStr, {
+        access: "private",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: "application/json",
+        cacheControlMaxAge: 0,
+      });
+      return true;
+    } catch {
+      await put("hrms_database.json", jsonStr, {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: "application/json",
+        cacheControlMaxAge: 0,
+      });
+      return true;
+    }
+  } catch (err) {
+    console.error("[Vercel Blob] Write failed:", err);
+    return false;
+  }
+}
+
+export function readDatabase(): DatabaseSchema {
+  try {
+    const tombstones = loadTombstones();
     const filePath = getDbPath();
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
@@ -698,6 +252,11 @@ export function readDatabase(): DatabaseSchema {
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, "utf-8");
       inMemoryDb = JSON.parse(content);
+      if (inMemoryDb && inMemoryDb.employees) {
+        inMemoryDb.employees = inMemoryDb.employees.filter(
+          (e) => !tombstones.has(e.id.toLowerCase()) && !tombstones.has(e.empId.toLowerCase())
+        );
+      }
       return inMemoryDb!;
     }
 
@@ -705,14 +264,20 @@ export function readDatabase(): DatabaseSchema {
     if (fs.existsSync(DEFAULT_DB_PATH)) {
       const content = fs.readFileSync(DEFAULT_DB_PATH, "utf-8");
       inMemoryDb = JSON.parse(content);
+      if (inMemoryDb && inMemoryDb.employees) {
+        inMemoryDb.employees = inMemoryDb.employees.filter(
+          (e) => !tombstones.has(e.id.toLowerCase()) && !tombstones.has(e.empId.toLowerCase())
+        );
+      }
       try {
-        fs.writeFileSync(filePath, content, "utf-8");
+        fs.writeFileSync(filePath, JSON.stringify(inMemoryDb, null, 2), "utf-8");
       } catch (e) {
         // ignore
       }
       return inMemoryDb!;
     }
 
+    if (inMemoryDb) return inMemoryDb;
     const seed = generateSeedData();
     inMemoryDb = seed;
     try {
@@ -730,6 +295,35 @@ export function readDatabase(): DatabaseSchema {
   }
 }
 
+export async function readDatabaseAsync(): Promise<DatabaseSchema> {
+  const tombstones = loadTombstones();
+  // 1. Try Vercel Blob first
+  const blobDb = await loadFromBlob();
+  if (blobDb) {
+    if (blobDb.employees) {
+      blobDb.employees = blobDb.employees.filter(
+        (e) => !tombstones.has(e.id.toLowerCase()) && !tombstones.has(e.empId.toLowerCase())
+      );
+    }
+    inMemoryDb = blobDb;
+    try {
+      const filePath = getDbPath();
+      fs.writeFileSync(filePath, JSON.stringify(blobDb, null, 2), "utf-8");
+    } catch {}
+    return inMemoryDb;
+  }
+
+  // 2. Read from disk
+  const localDb = readDatabase();
+
+  // If Vercel Blob is configured but had no file yet, initialize it
+  if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
+    saveToBlob(localDb).catch(() => {});
+  }
+
+  return localDb;
+}
+
 export function writeDatabase(data: DatabaseSchema): void {
   inMemoryDb = data;
   try {
@@ -738,18 +332,34 @@ export function writeDatabase(data: DatabaseSchema): void {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    const tempPath = `${filePath}.tmp.${Date.now()}`;
-    fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), "utf-8");
-    fs.renameSync(tempPath, filePath);
+    // Write directly to the target file
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+
+    // Also persist to DEFAULT_DB_PATH if writable and different
+    if (filePath !== DEFAULT_DB_PATH && fs.existsSync(path.dirname(DEFAULT_DB_PATH))) {
+      try {
+        fs.writeFileSync(DEFAULT_DB_PATH, JSON.stringify(data, null, 2), "utf-8");
+      } catch (e) {
+        // Read-only filesystem in Vercel production container
+      }
+    }
   } catch (error) {
-    // If writing to default path fails (e.g. read-only filesystem on Vercel), save to /tmp
+    console.error("Error writing database:", error);
     try {
       const fallbackPath = path.join(os.tmpdir(), "by_technologies_database.json");
       fs.writeFileSync(fallbackPath, JSON.stringify(data, null, 2), "utf-8");
     } catch (err2) {
-      console.error("Error writing database:", error, err2);
+      console.error("Error writing fallback database:", err2);
     }
   }
+
+  // Background sync to Blob
+  saveToBlob(data).catch(() => {});
+}
+
+export async function writeDatabaseAsync(data: DatabaseSchema): Promise<void> {
+  writeDatabase(data);
+  await saveToBlob(data);
 }
 
 // Entity helpers
@@ -759,9 +369,21 @@ export function getEmployees(): Employee[] {
   return db.employees;
 }
 
+export async function getEmployeesAsync(): Promise<Employee[]> {
+  const db = await readDatabaseAsync();
+  return db.employees;
+}
+
 export function getEmployeeById(id: string): Employee | undefined {
   const db = readDatabase();
-  return db.employees.find((e) => e.id === id || e.empId === id);
+  const target = id.trim().toLowerCase();
+  return db.employees.find((e) => e.id.toLowerCase() === target || e.empId.toLowerCase() === target);
+}
+
+export async function getEmployeeByIdAsync(id: string): Promise<Employee | undefined> {
+  const db = await readDatabaseAsync();
+  const target = id.trim().toLowerCase();
+  return db.employees.find((e) => e.id.toLowerCase() === target || e.empId.toLowerCase() === target);
 }
 
 export function getEmployeeByEmail(email: string): Employee | undefined {
@@ -785,7 +407,9 @@ export function getEmployeeByIdentifier(identifier: string): Employee | undefine
 
 export function saveEmployee(employee: Employee): Employee {
   const db = readDatabase();
-  const index = db.employees.findIndex((e) => e.id === employee.id);
+  const index = db.employees.findIndex(
+    (e) => e.id.toLowerCase() === employee.id.toLowerCase() || e.empId.toLowerCase() === employee.empId.toLowerCase()
+  );
   if (index >= 0) {
     db.employees[index] = { ...employee, updatedAt: new Date().toISOString() };
   } else {
@@ -799,13 +423,137 @@ export function saveEmployee(employee: Employee): Employee {
   return employee;
 }
 
+export async function saveEmployeeAsync(employee: Employee): Promise<Employee> {
+  const db = await readDatabaseAsync();
+  const index = db.employees.findIndex(
+    (e) => e.id.toLowerCase() === employee.id.toLowerCase() || e.empId.toLowerCase() === employee.empId.toLowerCase()
+  );
+  if (index >= 0) {
+    db.employees[index] = { ...employee, updatedAt: new Date().toISOString() };
+  } else {
+    db.employees.push({
+      ...employee,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }
+  await writeDatabaseAsync(db);
+  return employee;
+}
+
 export function deleteEmployee(id: string): boolean {
   const db = readDatabase();
   const initialLen = db.employees.length;
-  db.employees = db.employees.filter((e) => e.id !== id && e.empId !== id);
+  const target = id.trim().toLowerCase();
+  const deletedEmp = db.employees.find(
+    (e) => e.id.toLowerCase() === target || e.empId.toLowerCase() === target
+  );
+
+  db.employees = db.employees.filter(
+    (e) => e.id.toLowerCase() !== target && e.empId.toLowerCase() !== target
+  );
+
   if (db.employees.length !== initialLen) {
-    // Also clean up related records or keep logs
+    if (deletedEmp) {
+      const empIdKey = deletedEmp.id;
+      const empCodeKey = deletedEmp.empId;
+      recordDeletedId(empIdKey);
+      recordDeletedId(empCodeKey);
+      recordDeletedId(target);
+      // Clean up related attendance
+      db.attendance = db.attendance.filter(
+        (a) => a.employeeId !== empIdKey && a.employeeId !== empCodeKey
+      );
+      // Clean up related leaves
+      db.leaves = db.leaves.filter(
+        (l) => l.employeeId !== empIdKey && l.employeeId !== empCodeKey
+      );
+      // Clean up related login logs
+      db.loginLogs = db.loginLogs.filter(
+        (lg) => lg.employeeId !== empIdKey && lg.employeeId !== empCodeKey
+      );
+    }
     writeDatabase(db);
+    return true;
+  }
+  return false;
+}
+
+export async function deleteEmployeeAsync(id: string): Promise<boolean> {
+  const db = await readDatabaseAsync();
+  const initialLen = db.employees.length;
+  const target = id.trim().toLowerCase();
+  const deletedEmp = db.employees.find(
+    (e) => e.id.toLowerCase() === target || e.empId.toLowerCase() === target
+  );
+
+  db.employees = db.employees.filter(
+    (e) => e.id.toLowerCase() !== target && e.empId.toLowerCase() !== target
+  );
+
+  if (db.employees.length !== initialLen) {
+    if (deletedEmp) {
+      const empIdKey = deletedEmp.id;
+      const empCodeKey = deletedEmp.empId;
+      recordDeletedId(empIdKey);
+      recordDeletedId(empCodeKey);
+      recordDeletedId(target);
+      // Clean up related attendance
+      db.attendance = db.attendance.filter(
+        (a) => a.employeeId !== empIdKey && a.employeeId !== empCodeKey
+      );
+      // Clean up related leaves
+      db.leaves = db.leaves.filter(
+        (l) => l.employeeId !== empIdKey && l.employeeId !== empCodeKey
+      );
+      // Clean up related login logs
+      db.loginLogs = db.loginLogs.filter(
+        (lg) => lg.employeeId !== empIdKey && lg.employeeId !== empCodeKey
+      );
+    }
+    await writeDatabaseAsync(db);
+    return true;
+  }
+  return false;
+}
+
+export function saveEmployeeVisitingCard(
+  employeeId: string,
+  cardData: VisitingCardData
+): boolean {
+  const db = readDatabase();
+  const target = employeeId.trim().toLowerCase();
+  const empIndex = db.employees.findIndex(
+    (e) => e.id.toLowerCase() === target || e.empId.toLowerCase() === target
+  );
+  if (empIndex >= 0) {
+    db.employees[empIndex].visitingCard = {
+      ...cardData,
+      updatedAt: new Date().toISOString(),
+    };
+    db.employees[empIndex].updatedAt = new Date().toISOString();
+    writeDatabase(db);
+    return true;
+  }
+  return false;
+}
+
+export async function saveEmployeeVisitingCardAsync(
+  employeeId: string,
+  cardData: VisitingCardData
+): Promise<boolean> {
+  const db = await readDatabaseAsync();
+  const target = employeeId.trim().toLowerCase();
+  const empIndex = db.employees.findIndex(
+    (e) => e.id.toLowerCase() === target || e.empId.toLowerCase() === target
+  );
+  if (empIndex >= 0) {
+    db.employees[empIndex].visitingCard = {
+      ...cardData,
+      updatedAt: new Date().toISOString(),
+    };
+    db.employees[empIndex].updatedAt = new Date().toISOString();
+    await writeDatabaseAsync(db);
     return true;
   }
   return false;
@@ -906,6 +654,23 @@ export function addLoginLog(log: Omit<LoginLog, "id">): LoginLog {
 export function getLoginLogs(limit = 100): LoginLog[] {
   const db = readDatabase();
   return db.loginLogs.slice(0, limit);
+}
+
+export function clearLoginLogs(): void {
+  const db = readDatabase();
+  db.loginLogs = [];
+  writeDatabase(db);
+}
+
+export function deleteLoginLog(id: string): boolean {
+  const db = readDatabase();
+  const initialLen = db.loginLogs.length;
+  db.loginLogs = db.loginLogs.filter((l) => l.id !== id);
+  if (db.loginLogs.length !== initialLen) {
+    writeDatabase(db);
+    return true;
+  }
+  return false;
 }
 
 export function getJobs(): JobOpening[] {

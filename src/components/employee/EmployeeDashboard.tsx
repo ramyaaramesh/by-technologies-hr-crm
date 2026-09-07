@@ -138,8 +138,10 @@ export default function EmployeeDashboard() {
       minute: "2-digit",
     });
 
-    // Check if after 9:30 AM -> mark Late
-    const isLate = now.getHours() > 9 || (now.getHours() === 9 && now.getMinutes() > 30);
+    // Official login is 9:30 AM; if check-in after 10:30 AM -> mark Late, otherwise Present
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const isLate = hours > 10 || (hours === 10 && minutes > 30);
     const status: AttendanceStatus = isLate ? "Late" : "Present";
 
     try {
@@ -291,21 +293,21 @@ export default function EmployeeDashboard() {
       : `${diffMonths} months`;
 
   return (
-    <div className="min-h-screen bg-[#F6FAF0] text-[#331E1E]">
+    <div className="min-h-screen bg-[#F5F9F7] text-[#162E3D]">
       {/* Top Navbar */}
-      <header className="bg-[#331E1E] text-white px-4 sm:px-8 py-3.5 sticky top-0 z-30 shadow-md border-b border-[#442828]">
+      <header className="bg-[#162E3D] text-white px-4 sm:px-8 py-3.5 sticky top-0 z-30 shadow-md border-b border-[#244254]">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
               src="/logo-badge.png"
               alt="B & Y Technologies Logo"
-              className="w-10 h-10 rounded-full object-contain ring-2 ring-[#A2FC4B] shadow-sm"
+              className="w-10 h-10 rounded-full object-contain ring-2 ring-[#45C512] shadow-sm"
             />
             <div>
               <div className="text-sm sm:text-base font-bold tracking-wider font-serif uppercase leading-none">
                 B &amp; Y TECHNOLOGIES
               </div>
-              <div className="text-[10px] text-[#A2FC4B] font-semibold tracking-wide mt-0.5">
+              <div className="text-[10px] text-[#45C512] font-semibold tracking-wide mt-0.5">
                 Employee Self-Service Portal
               </div>
             </div>
@@ -315,12 +317,12 @@ export default function EmployeeDashboard() {
             {/* Team Connect Chat Button with Notification */}
             <button
               onClick={() => setChatOpen(!chatOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#A2FC4B] hover:bg-[#8ee036] text-[#331E1E] text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#45C512] hover:bg-[#3db010] text-[#162E3D] text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               <span>Team Connect</span>
               {unreadChatCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-[#331E1E] text-[#A2FC4B] text-[10px] font-bold flex items-center justify-center">
+                <span className="w-5 h-5 rounded-full bg-[#162E3D] text-[#45C512] text-[10px] font-bold flex items-center justify-center">
                   {unreadChatCount}
                 </span>
               )}
@@ -329,7 +331,7 @@ export default function EmployeeDashboard() {
             {/* Quick Switch to HR Admin */}
             <button
               onClick={() => switchRole("admin")}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-[#A2FC4B] hover:text-[#331E1E] text-white text-xs font-semibold rounded-xl transition-all cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-[#45C512] hover:text-[#162E3D] text-white text-xs font-semibold rounded-xl transition-all cursor-pointer"
             >
               <Shield className="w-3.5 h-3.5" />
               <span>Switch to HR Admin</span>
@@ -350,21 +352,21 @@ export default function EmployeeDashboard() {
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Welcome Banner */}
-        <div className="bg-[#331E1E] text-white rounded-3xl p-6 sm:p-8 shadow-by-lg relative overflow-hidden border border-[#442828]">
+        <div className="bg-[#162E3D] text-white rounded-3xl p-6 sm:p-8 shadow-by-lg relative overflow-hidden border border-[#244254]">
           {/* Subtle Ambient Glow */}
-          <div className="absolute -top-16 -right-16 w-80 h-80 bg-[#A2FC4B]/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-16 -left-16 w-80 h-80 bg-[#A2FC4B]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-16 -right-16 w-80 h-80 bg-[#45C512]/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -left-16 w-80 h-80 bg-[#45C512]/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-start sm:items-center gap-4 sm:gap-5">
               <img
                 src="/logo-badge.png"
                 alt="B & Y Logo Badge"
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-contain ring-4 ring-[#A2FC4B] shadow-md flex-shrink-0"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-contain ring-4 ring-[#45C512] shadow-md flex-shrink-0"
               />
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#A2FC4B] text-[#331E1E] uppercase tracking-wider">
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#45C512] text-[#162E3D] uppercase tracking-wider">
                     {employee.department}
                   </span>
                   <span className="text-xs text-white/70 font-mono">
@@ -375,17 +377,17 @@ export default function EmployeeDashboard() {
                   Welcome to B &amp; Y Technologies, {employee.name}
                 </h1>
                 <p className="text-xs sm:text-sm text-white/80 mt-1 flex items-center gap-2">
-                  <Briefcase className="w-4 h-4 text-[#A2FC4B]" />
+                  <Briefcase className="w-4 h-4 text-[#45C512]" />
                   <span>{employee.designation}</span>
                   <span className="text-white/40">•</span>
-                  <span className="text-[#A2FC4B] font-medium">{greeting}!</span>
+                  <span className="text-[#45C512] font-medium">{greeting}!</span>
                 </p>
               </div>
             </div>
 
             {/* Live Clock Card */}
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15 text-center min-w-[170px] self-stretch md:self-auto flex flex-col justify-center">
-              <div className="text-[10px] uppercase font-bold tracking-widest text-[#A2FC4B]">
+              <div className="text-[10px] uppercase font-bold tracking-widest text-[#45C512]">
                 {currentTime.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
               </div>
               <div className="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-white mt-0.5">
@@ -403,95 +405,95 @@ export default function EmployeeDashboard() {
         {/* Top Grid: Profile Card & Check-In/Out Card */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Card */}
-          <div className="bg-white p-6 rounded-2xl border border-[#E2EAD6] shadow-by flex flex-col justify-between">
+          <div className="bg-white p-6 rounded-2xl border border-[#DDEAE2] shadow-by flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between pb-4 border-b border-[#E2EAD6]">
+              <div className="flex items-center justify-between pb-4 border-b border-[#DDEAE2]">
                 <div className="flex items-center gap-3">
                   <img
                     src={
                       employee.avatarUrl ||
                       `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
                         employee.name
-                      )}&backgroundColor=331e1e&textColor=a2fc4b`
+                      )}&backgroundColor=162e3d&textColor=45c512`
                     }
                     alt={employee.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-[#A2FC4B]"
+                    className="w-12 h-12 rounded-full object-cover border-2 border-[#45C512]"
                   />
                   <div>
-                    <h3 className="text-sm font-bold text-[#331E1E]">{employee.name}</h3>
-                    <div className="text-xs text-[#706161]">{employee.designation}</div>
+                    <h3 className="text-sm font-bold text-[#162E3D]">{employee.name}</h3>
+                    <div className="text-xs text-[#5B7586]">{employee.designation}</div>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#EEFCD9] text-[#2c5306] border border-[#A2FC4B]/60">
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#EEFCD9] text-[#2c5306] border border-[#45C512]/60">
                   ● ACTIVE
                 </span>
               </div>
 
               <div className="space-y-3 pt-4 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#706161] flex items-center gap-1.5">
+                  <span className="text-[#5B7586] flex items-center gap-1.5">
                     <Building2 className="w-3.5 h-3.5" /> Department
                   </span>
-                  <span className="font-bold text-[#331E1E] text-right">{employee.department}</span>
+                  <span className="font-bold text-[#162E3D] text-right">{employee.department}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[#706161] flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-[#331E1E]" /> Portal Login ID
+                  <span className="text-[#5B7586] flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-[#162E3D]" /> Portal Login ID
                   </span>
-                  <span className="font-mono font-bold text-xs bg-[#331E1E] text-[#A2FC4B] px-2 py-0.5 rounded-md">
+                  <span className="font-mono font-bold text-xs bg-[#162E3D] text-[#45C512] px-2 py-0.5 rounded-md">
                     {employee.empId}
                   </span>
                 </div>
 
                 {employee.email && (
                   <div className="flex items-center justify-between">
-                    <span className="text-[#706161] flex items-center gap-1.5">
+                    <span className="text-[#5B7586] flex items-center gap-1.5">
                       <Mail className="w-3.5 h-3.5" /> Work Email
                     </span>
-                    <span className="font-medium text-[#331E1E] text-right truncate max-w-[170px]">
+                    <span className="font-medium text-[#162E3D] text-right truncate max-w-[170px]">
                       {employee.email}
                     </span>
                   </div>
                 )}
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[#706161] flex items-center gap-1.5">
+                  <span className="text-[#5B7586] flex items-center gap-1.5">
                     <Phone className="w-3.5 h-3.5" /> Phone
                   </span>
-                  <span className="font-medium text-[#331E1E]">{employee.phone || "—"}</span>
+                  <span className="font-medium text-[#162E3D]">{employee.phone || "—"}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[#706161] flex items-center gap-1.5">
+                  <span className="text-[#5B7586] flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" /> Date of Joining
                   </span>
-                  <span className="font-mono text-[#331E1E]">{employee.dateOfJoining}</span>
+                  <span className="font-mono text-[#162E3D]">{employee.dateOfJoining}</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-[#E2EAD6] grid grid-cols-2 gap-2 text-center text-xs">
-              <div className="bg-[#F6FAF0] p-2.5 rounded-xl border border-[#E2EAD6]">
-                <div className="text-[10px] text-[#706161]">Company Tenure</div>
-                <div className="font-bold text-[#331E1E] mt-0.5">{tenureStr}</div>
+            <div className="mt-6 pt-4 border-t border-[#DDEAE2] grid grid-cols-2 gap-2 text-center text-xs">
+              <div className="bg-[#F5F9F7] p-2.5 rounded-xl border border-[#DDEAE2]">
+                <div className="text-[10px] text-[#5B7586]">Company Tenure</div>
+                <div className="font-bold text-[#162E3D] mt-0.5">{tenureStr}</div>
               </div>
-              <div className="bg-[#EEFCD9] p-2.5 rounded-xl border border-[#A2FC4B]/40">
-                <div className="text-[10px] text-[#2c5306]">Leave Balance</div>
-                <div className="font-bold text-[#234404] mt-0.5">14 Days Left</div>
+              <div className="bg-[#EEF9EB] p-2.5 rounded-xl border border-[#45C512]/40">
+                <div className="text-[10px] text-[#1B4332]">Leave Balance</div>
+                <div className="font-bold text-[#1B4332] mt-0.5">14 Days Left</div>
               </div>
             </div>
           </div>
 
           {/* Check-In / Check-Out Widget (Span 2) */}
-          <div className="lg:col-span-2 bg-white p-6 sm:p-8 rounded-2xl border border-[#E2EAD6] shadow-by flex flex-col justify-between">
+          <div className="lg:col-span-2 bg-white p-6 sm:p-8 rounded-2xl border border-[#DDEAE2] shadow-by flex flex-col justify-between">
             <div>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#E2EAD6]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#DDEAE2]">
                 <div>
-                  <div className="text-[11px] font-bold text-[#A2FC4B] uppercase tracking-wider bg-[#331E1E] px-2.5 py-0.5 rounded-md inline-block">
+                  <div className="text-[11px] font-bold text-[#45C512] uppercase tracking-wider bg-[#162E3D] px-2.5 py-0.5 rounded-md inline-block">
                     Daily Attendance Terminal
                   </div>
-                  <h2 className="text-base sm:text-lg font-bold text-[#331E1E] mt-1">
+                  <h2 className="text-base sm:text-lg font-bold text-[#162E3D] mt-1">
                     Today&apos;s Presence &amp; Clocking
                   </h2>
                 </div>
@@ -503,7 +505,7 @@ export default function EmployeeDashboard() {
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
                         todayAttendance.checkOutTime
                           ? "bg-blue-50 text-blue-800 border border-blue-200"
-                          : "bg-[#EEFCD9] text-[#2c5306] border border-[#A2FC4B]/60"
+                          : "bg-[#EEF9EB] text-[#1B4332] border border-[#45C512]/60"
                       }`}
                     >
                       <CheckCircle2 className="w-4 h-4" />
@@ -520,30 +522,41 @@ export default function EmployeeDashboard() {
                 </div>
               </div>
 
+              {/* Standard Timing Banner */}
+              <div className="p-3 bg-[#EEF9EB] border border-[#45C512]/40 rounded-xl text-xs text-[#162E3D] flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-[#45C512]" />
+                  <span className="font-semibold">Official Work Hours: 09:30 AM – 06:30 PM</span>
+                </div>
+                <span className="text-[11px] text-[#5B7586] bg-white px-2 py-0.5 rounded-full border border-[#DDEAE2]">
+                  Grace window: Check-in by 10:30 AM (after 10:30 AM is marked Late)
+                </span>
+              </div>
+
               {/* Status Summary info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
-                <div className="p-4 rounded-xl bg-[#F6FAF0] border border-[#E2EAD6]">
-                  <div className="text-[11px] font-semibold text-[#706161]">Check-In Status</div>
-                  <div className="text-lg font-bold font-mono text-[#331E1E] mt-1">
+                <div className="p-4 rounded-xl bg-[#F5F9F7] border border-[#DDEAE2]">
+                  <div className="text-[11px] font-semibold text-[#5B7586]">Check-In Status (Login Time)</div>
+                  <div className="text-lg font-bold font-mono text-[#162E3D] mt-1">
                     {todayAttendance?.checkInTime || "— — : — —"}
                   </div>
-                  <div className="text-[11px] text-[#706161] mt-0.5">
+                  <div className="text-[11px] text-[#5B7586] mt-0.5">
                     {todayAttendance?.checkInTime
                       ? `Recorded as ${todayAttendance.status}`
-                      : "Click Check In when you begin work"}
+                      : "Expected: 09:30 AM (Grace until 10:30 AM)"}
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#F6FAF0] border border-[#E2EAD6]">
-                  <div className="text-[11px] font-semibold text-[#706161]">Check-Out Status</div>
-                  <div className="text-lg font-bold font-mono text-[#331E1E] mt-1">
+                <div className="p-4 rounded-xl bg-[#F5F9F7] border border-[#DDEAE2]">
+                  <div className="text-[11px] font-semibold text-[#5B7586]">Check-Out Status (Exit Time)</div>
+                  <div className="text-lg font-bold font-mono text-[#162E3D] mt-1">
                     {todayAttendance?.checkOutTime || "— — : — —"}
                   </div>
-                  <div className="text-[11px] text-[#706161] mt-0.5">
+                  <div className="text-[11px] text-[#5B7586] mt-0.5">
                     {todayAttendance?.checkOutTime
                       ? "Clocked out for the day"
                       : todayAttendance?.checkInTime
-                      ? "Active shift in progress"
+                      ? "Standard Exit: 06:30 PM (Shift active)"
                       : "Pending check-in"}
                   </div>
                 </div>
@@ -552,13 +565,13 @@ export default function EmployeeDashboard() {
               {/* Work Location / Notes selector */}
               {!todayAttendance && (
                 <div className="mb-4">
-                  <label className="block text-xs font-bold text-[#331E1E] mb-1">
+                  <label className="block text-xs font-bold text-[#162E3D] mb-1">
                     Working Location / Mode:
                   </label>
                   <select
                     value={checkInNotes}
                     onChange={(e) => setCheckInNotes(e.target.value)}
-                    className="w-full sm:w-72 px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B] font-medium"
+                    className="w-full sm:w-72 px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512] font-medium text-[#162E3D]"
                   >
                     <option value="Office - Chennai Studio">🏢 Office - Chennai Studio</option>
                     <option value="Remote / WFH">🏠 Remote / Work From Home</option>
@@ -576,7 +589,7 @@ export default function EmployeeDashboard() {
                 className={`flex-1 py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm ${
                   todayAttendance?.checkInTime
                     ? "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
-                    : "bg-[#A2FC4B] hover:bg-[#8ee234] text-[#331E1E] cursor-pointer"
+                    : "bg-[#45C512] hover:bg-[#3db010] text-[#162E3D] cursor-pointer"
                 }`}
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -597,10 +610,10 @@ export default function EmployeeDashboard() {
                 className={`flex-1 py-3.5 px-5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm ${
                   !todayAttendance?.checkInTime || todayAttendance?.checkOutTime
                     ? "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
-                    : "bg-[#331E1E] hover:bg-[#442828] text-white cursor-pointer"
+                    : "bg-[#162E3D] hover:bg-[#244254] text-white cursor-pointer"
                 }`}
               >
-                <Clock className="w-4 h-4 text-[#A2FC4B]" />
+                <Clock className="w-4 h-4 text-[#45C512]" />
                 {todayAttendance?.checkOutTime
                   ? `Checked Out at ${todayAttendance.checkOutTime}`
                   : attLoading
@@ -614,11 +627,11 @@ export default function EmployeeDashboard() {
         {/* Middle Section: Interactive Calendar & Leave Application */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Calendar Widget (Span 2) */}
-          <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-[#E2EAD6] shadow-by space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E2EAD6]">
+          <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-[#DDEAE2] shadow-by space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#DDEAE2]">
               <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#331E1E]" />
-                <h2 className="text-base font-bold text-[#331E1E]">
+                <Calendar className="w-5 h-5 text-[#162E3D]" />
+                <h2 className="text-base font-bold text-[#162E3D]">
                   {monthNames[month]} {year} Calendar
                 </h2>
               </div>
@@ -626,19 +639,19 @@ export default function EmployeeDashboard() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={prevMonth}
-                  className="p-1.5 rounded-lg bg-[#F6FAF0] hover:bg-[#E2EAD6] text-[#331E1E] transition-colors"
+                  className="p-1.5 rounded-lg bg-[#F5F9F7] hover:bg-[#DDEAE2] text-[#162E3D] transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setCalendarDate(new Date())}
-                  className="px-2.5 py-1 text-xs font-semibold bg-[#F6FAF0] hover:bg-[#E2EAD6] text-[#331E1E] rounded-lg"
+                  className="px-2.5 py-1 text-xs font-semibold bg-[#F5F9F7] hover:bg-[#DDEAE2] text-[#162E3D] rounded-lg"
                 >
                   Today
                 </button>
                 <button
                   onClick={nextMonth}
-                  className="p-1.5 rounded-lg bg-[#F6FAF0] hover:bg-[#E2EAD6] text-[#331E1E] transition-colors"
+                  className="p-1.5 rounded-lg bg-[#F5F9F7] hover:bg-[#DDEAE2] text-[#162E3D] transition-colors"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -648,7 +661,7 @@ export default function EmployeeDashboard() {
             {/* Calendar Legend */}
             <div className="flex flex-wrap items-center gap-4 text-[11px] text-[#706161]">
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#A2FC4B]" /> Present
+                <span className="w-2.5 h-2.5 rounded-full bg-[#45C512]" /> Present
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Late
@@ -668,9 +681,9 @@ export default function EmployeeDashboard() {
             </div>
 
             {/* Calendar Grid */}
-            <div className="border border-[#E2EAD6] rounded-xl overflow-hidden">
+            <div className="border border-[#DDEAE2] rounded-xl overflow-hidden">
               {/* Day Headers */}
-              <div className="grid grid-cols-7 bg-[#331E1E] text-white text-[11px] font-bold text-center py-2 uppercase tracking-wider">
+              <div className="grid grid-cols-7 bg-[#162E3D] text-white text-[11px] font-bold text-center py-2 uppercase tracking-wider">
                 <div>Sun</div>
                 <div>Mon</div>
                 <div>Tue</div>
@@ -681,10 +694,10 @@ export default function EmployeeDashboard() {
               </div>
 
               {/* Day Cells */}
-              <div className="grid grid-cols-7 divide-x divide-y divide-[#E2EAD6] bg-white">
+              <div className="grid grid-cols-7 divide-x divide-y divide-[#DDEAE2] bg-white">
                 {/* Empty cells before month starts */}
                 {Array.from({ length: firstDayOfWeek }).map((_, idx) => (
-                  <div key={`empty-${idx}`} className="h-16 sm:h-20 bg-[#F6FAF0]/40 p-1" />
+                  <div key={`empty-${idx}`} className="h-16 sm:h-20 bg-[#F5F9F7]/40 p-1" />
                 ))}
 
                 {/* Day cells */}
@@ -708,16 +721,16 @@ export default function EmployeeDashboard() {
                           leave,
                         })
                       }
-                      className={`h-16 sm:h-20 p-1.5 flex flex-col justify-between transition-colors cursor-pointer hover:bg-[#F6FAF0] relative ${
-                        isToday ? "bg-[#EEFCD9]/50 ring-2 ring-inset ring-[#A2FC4B]" : ""
+                      className={`h-16 sm:h-20 p-1.5 flex flex-col justify-between transition-colors cursor-pointer hover:bg-[#F5F9F7] relative ${
+                        isToday ? "bg-[#45C512]/15 ring-2 ring-inset ring-[#45C512]" : ""
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <span
                           className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
                             isToday
-                              ? "bg-[#331E1E] text-[#A2FC4B]"
-                              : "text-[#331E1E]"
+                              ? "bg-[#162E3D] text-[#45C512]"
+                              : "text-[#162E3D]"
                           }`}
                         >
                           {dayNum}
@@ -770,9 +783,9 @@ export default function EmployeeDashboard() {
 
             {/* Selected Day Details Card (if clicked) */}
             {selectedCalendarDay && (
-              <div className="p-3 bg-[#F6FAF0] rounded-xl border border-[#E2EAD6] text-xs flex items-center justify-between">
+              <div className="p-3 bg-[#F5F9F7] rounded-xl border border-[#DDEAE2] text-xs flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-[#331E1E]">
+                  <span className="font-bold text-[#162E3D]">
                     Details for {selectedCalendarDay.dateStr}:
                   </span>{" "}
                   {selectedCalendarDay.leave ? (
@@ -781,7 +794,7 @@ export default function EmployeeDashboard() {
                       {selectedCalendarDay.leave.reason})
                     </span>
                   ) : selectedCalendarDay.attendance ? (
-                    <span className="text-[#331E1E] ml-2">
+                    <span className="text-[#162E3D] ml-2">
                       Status: <strong>{selectedCalendarDay.attendance.status}</strong> | In:{" "}
                       {selectedCalendarDay.attendance.checkInTime || "—"} | Out:{" "}
                       {selectedCalendarDay.attendance.checkOutTime || "—"}
@@ -792,7 +805,7 @@ export default function EmployeeDashboard() {
                 </div>
                 <button
                   onClick={() => setSelectedCalendarDay(null)}
-                  className="text-xs text-[#706161] hover:text-[#331E1E] font-bold"
+                  className="text-xs text-[#706161] hover:text-[#162E3D] font-bold"
                 >
                   Close
                 </button>
@@ -801,11 +814,11 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Leave Application Form */}
-          <div className="bg-white p-6 rounded-2xl border border-[#E2EAD6] shadow-by flex flex-col justify-between">
+          <div className="bg-white p-6 rounded-2xl border border-[#DDEAE2] shadow-by flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-2 pb-3 border-b border-[#E2EAD6]">
-                <CalendarOff className="w-5 h-5 text-[#331E1E]" />
-                <h2 className="text-base font-bold text-[#331E1E]">Apply for Leave</h2>
+              <div className="flex items-center gap-2 pb-3 border-b border-[#DDEAE2]">
+                <CalendarOff className="w-5 h-5 text-[#162E3D]" />
+                <h2 className="text-base font-bold text-[#162E3D]">Apply for Leave</h2>
               </div>
 
               {leaveSuccessMsg && (
@@ -824,11 +837,11 @@ export default function EmployeeDashboard() {
 
               <form onSubmit={handleApplyLeave} className="space-y-3 mt-4 text-xs">
                 <div>
-                  <label className="block font-bold text-[#331E1E] mb-1">Leave Type *</label>
+                  <label className="block font-bold text-[#162E3D] mb-1">Leave Type *</label>
                   <select
                     value={leaveType}
                     onChange={(e) => setLeaveType(e.target.value as LeaveType)}
-                    className="w-full px-3 py-2 bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                    className="w-full px-3 py-2 bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                   >
                     <option value="Casual Leave">Casual Leave</option>
                     <option value="Sick Leave">Sick Leave</option>
@@ -840,36 +853,36 @@ export default function EmployeeDashboard() {
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block font-bold text-[#331E1E] mb-1">From Date *</label>
+                    <label className="block font-bold text-[#162E3D] mb-1">From Date *</label>
                     <input
                       type="date"
                       required
                       value={fromDate}
                       onChange={(e) => setFromDate(e.target.value)}
-                      className="w-full px-2.5 py-2 bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                      className="w-full px-2.5 py-2 bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                     />
                   </div>
                   <div>
-                    <label className="block font-bold text-[#331E1E] mb-1">To Date *</label>
+                    <label className="block font-bold text-[#162E3D] mb-1">To Date *</label>
                     <input
                       type="date"
                       required
                       value={toDate}
                       onChange={(e) => setToDate(e.target.value)}
-                      className="w-full px-2.5 py-2 bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                      className="w-full px-2.5 py-2 bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#331E1E] mb-1">Reason *</label>
+                  <label className="block font-bold text-[#162E3D] mb-1">Reason *</label>
                   <textarea
                     rows={3}
                     required
                     value={leaveReason}
                     onChange={(e) => setLeaveReason(e.target.value)}
                     placeholder="Provide reason for leave..."
-                    className="w-full px-3 py-2 bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                    className="w-full px-3 py-2 bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                   />
                 </div>
 
@@ -877,7 +890,7 @@ export default function EmployeeDashboard() {
                   <button
                     type="submit"
                     disabled={leaveSubmitting}
-                    className="w-full py-2.5 px-4 bg-[#331E1E] hover:bg-[#442828] text-[#A2FC4B] font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="w-full py-2.5 px-4 bg-[#162E3D] hover:bg-[#244254] text-[#45C512] font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     <Send className="w-3.5 h-3.5" />
                     {leaveSubmitting ? "Submitting Request..." : "Submit Leave Application"}
@@ -886,7 +899,7 @@ export default function EmployeeDashboard() {
               </form>
             </div>
 
-            <div className="text-[11px] text-[#706161] bg-[#F6FAF0] p-3 rounded-xl border border-[#E2EAD6] mt-4">
+            <div className="text-[11px] text-[#706161] bg-[#F5F9F7] p-3 rounded-xl border border-[#DDEAE2] mt-4">
               ℹ️ HR Administration will review your application. Once approved, the leave dates are automatically marked on your calendar.
             </div>
           </div>
@@ -895,30 +908,30 @@ export default function EmployeeDashboard() {
         {/* Bottom Section: My Leave History & Recent Attendance History */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* My Leave History */}
-          <div className="bg-white rounded-2xl border border-[#E2EAD6] shadow-by overflow-hidden">
-            <div className="p-4 bg-[#331E1E] text-white flex items-center justify-between">
+          <div className="bg-white rounded-2xl border border-[#DDEAE2] shadow-by overflow-hidden">
+            <div className="p-4 bg-[#162E3D] text-white flex items-center justify-between">
               <h3 className="text-sm font-bold font-serif uppercase tracking-wider">
                 My Leave History
               </h3>
-              <span className="text-[11px] text-[#A2FC4B]">
+              <span className="text-[11px] text-[#45C512]">
                 {leavesList.length} Requests
               </span>
             </div>
 
-            <div className="divide-y divide-[#E2EAD6] max-h-72 overflow-y-auto">
+            <div className="divide-y divide-[#DDEAE2] max-h-72 overflow-y-auto">
               {leavesList.length === 0 ? (
                 <div className="p-6 text-center text-xs text-[#706161]">
                   No leave applications submitted yet.
                 </div>
               ) : (
                 leavesList.map((leave) => (
-                  <div key={leave.id} className="p-4 hover:bg-[#F6FAF0] transition-colors text-xs">
+                  <div key={leave.id} className="p-4 hover:bg-[#F5F9F7] transition-colors text-xs">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-[#331E1E]">{leave.leaveType}</span>
+                      <span className="font-bold text-[#162E3D]">{leave.leaveType}</span>
                       <span
                         className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           leave.status === "Approved"
-                            ? "bg-[#EEFCD9] text-[#2c5306] border border-[#A2FC4B]/60"
+                            ? "bg-[#EEFCD9] text-[#2c5306] border border-[#45C512]/60"
                             : leave.status === "Pending"
                             ? "bg-amber-50 text-amber-800 border border-amber-300"
                             : "bg-red-50 text-red-800 border border-red-200"
@@ -931,7 +944,7 @@ export default function EmployeeDashboard() {
                       {leave.fromDate} to {leave.toDate} ({leave.days}{" "}
                       {leave.days === 1 ? "day" : "days"})
                     </div>
-                    <p className="text-[#331E1E] italic">&ldquo;{leave.reason}&rdquo;</p>
+                    <p className="text-[#162E3D] italic">&ldquo;{leave.reason}&rdquo;</p>
                     {leave.reviewNote && (
                       <div className="mt-1 text-[10px] text-[#2c5306] bg-[#EEFCD9]/60 px-2 py-1 rounded">
                         HR Remark: {leave.reviewNote}
@@ -944,19 +957,19 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Recent Attendance History */}
-          <div className="bg-white rounded-2xl border border-[#E2EAD6] shadow-by overflow-hidden">
-            <div className="p-4 bg-[#331E1E] text-white flex items-center justify-between">
+          <div className="bg-white rounded-2xl border border-[#DDEAE2] shadow-by overflow-hidden">
+            <div className="p-4 bg-[#162E3D] text-white flex items-center justify-between">
               <h3 className="text-sm font-bold font-serif uppercase tracking-wider">
                 Recent Attendance History
               </h3>
-              <span className="text-[11px] text-[#A2FC4B]">
+              <span className="text-[11px] text-[#45C512]">
                 {attendanceList.length} Records
               </span>
             </div>
 
             <div className="overflow-x-auto max-h-72 overflow-y-auto">
-              <table className="w-full text-left text-xs text-[#331E1E]">
-                <thead className="bg-[#F6FAF0] text-[#706161] text-[10px] uppercase font-bold border-b border-[#E2EAD6]">
+              <table className="w-full text-left text-xs text-[#162E3D]">
+                <thead className="bg-[#F5F9F7] text-[#607274] text-[10px] uppercase font-bold border-b border-[#DDEAE2]">
                   <tr>
                     <th className="py-2.5 px-3">Date</th>
                     <th className="py-2.5 px-3">Check-In</th>
@@ -964,7 +977,7 @@ export default function EmployeeDashboard() {
                     <th className="py-2.5 px-3 text-right">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E2EAD6]">
+                <tbody className="divide-y divide-[#DDEAE2]">
                   {attendanceList.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="p-6 text-center text-xs text-[#706161]">
@@ -973,11 +986,11 @@ export default function EmployeeDashboard() {
                     </tr>
                   ) : (
                     attendanceList.slice(0, 15).map((att) => (
-                      <tr key={att.id} className="hover:bg-[#F6FAF0]/70">
+                      <tr key={att.id} className="hover:bg-[#F5F9F7]/70">
                         <td className="py-2.5 px-3 font-mono font-medium">
                           {att.date}
                           {att.date === todayStr && (
-                            <span className="ml-1 text-[9px] px-1 bg-[#A2FC4B] text-[#331E1E] rounded font-bold">
+                            <span className="ml-1 text-[9px] px-1 bg-[#45C512] text-[#162E3D] rounded font-bold">
                               TODAY
                             </span>
                           )}
@@ -1017,16 +1030,16 @@ export default function EmployeeDashboard() {
       <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => setChatOpen(true)}
-          className="relative group p-4 rounded-full bg-[#331E1E] text-[#A2FC4B] hover:bg-[#442828] shadow-2xl border-2 border-[#A2FC4B] transition-all transform hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center"
+          className="relative group p-4 rounded-full bg-[#162E3D] text-[#45C512] hover:bg-[#244254] shadow-2xl border-2 border-[#45C512] transition-all transform hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center"
           title="Open Team Connect Chat"
         >
           <MessageSquare className="w-6 h-6" />
           {unreadChatCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#A2FC4B] text-[#331E1E] font-bold text-[11px] rounded-full flex items-center justify-center shadow-md animate-bounce">
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#45C512] text-[#162E3D] font-bold text-[11px] rounded-full flex items-center justify-center shadow-md animate-bounce">
               {unreadChatCount}
             </span>
           )}
-          <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs group-hover:ml-2 text-xs font-bold text-[#A2FC4B] transition-all duration-300">
+          <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs group-hover:ml-2 text-xs font-bold text-[#45C512] transition-all duration-300">
             Team Connect
           </span>
         </button>
@@ -1035,20 +1048,20 @@ export default function EmployeeDashboard() {
       {/* Team Chat Modal / Drawer */}
       {chatOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-fadeIn">
-          <div className="bg-white rounded-3xl border border-[#E2EAD6] shadow-2xl max-w-5xl w-full h-[85vh] flex flex-col overflow-hidden animate-slideUp">
+          <div className="bg-white rounded-3xl border border-[#DDEAE2] shadow-2xl max-w-5xl w-full h-[85vh] flex flex-col overflow-hidden animate-slideUp">
             {/* Modal Header */}
-            <div className="bg-[#331E1E] text-white p-4 flex items-center justify-between border-b border-[#442828]">
+            <div className="bg-[#162E3D] text-white p-4 flex items-center justify-between border-b border-[#244254]">
               <div className="flex items-center gap-3">
                 <img
                   src="/logo-badge.png"
                   alt="B & Y Technologies Logo"
-                  className="w-8 h-8 rounded-full object-contain ring-2 ring-[#A2FC4B]"
+                  className="w-8 h-8 rounded-full object-contain ring-2 ring-[#45C512]"
                 />
                 <div>
                   <h3 className="text-sm font-bold font-serif uppercase tracking-wider text-white">
                     Team Connect &bull; Agency Chat
                   </h3>
-                  <p className="text-[10px] text-[#A89898]">
+                  <p className="text-[10px] text-gray-300">
                     Logged in as {employee.name} ({employee.empId}) &bull; {employee.designation}
                   </p>
                 </div>

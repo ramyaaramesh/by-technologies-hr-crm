@@ -73,7 +73,19 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
         setChannels(chanData.channels || []);
       }
       if (empData.success) {
-        setEmployees(empData.employees || []);
+        let empList: Employee[] = empData.employees || [];
+        try {
+          const raw = localStorage.getItem("byt_deleted_emp_ids");
+          if (raw) {
+            const deletedIds: string[] = JSON.parse(raw);
+            empList = empList.filter(
+              (e) => !deletedIds.includes(e.id) && !deletedIds.includes(e.empId)
+            );
+          }
+        } catch (e) {
+          // ignore
+        }
+        setEmployees(empList);
       }
     } catch (err) {
       console.error("Failed to load chat meta:", err);
@@ -249,15 +261,15 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
   const isDMWithAdmin = activeType === "dm" && activeId === "admin";
 
   return (
-    <div className="bg-white rounded-3xl border border-[#E2EAD6] shadow-by overflow-hidden flex flex-col md:flex-row h-[750px]">
+    <div className="bg-white rounded-3xl border border-[#DDEAE2] shadow-by overflow-hidden flex flex-col md:flex-row h-[750px]">
       {/* ========================================================================= */}
       {/* SIDEBAR: CHANNELS & DIRECT MESSAGES */}
       {/* ========================================================================= */}
-      <div className="w-full md:w-80 bg-[#331E1E] text-white flex flex-col border-r border-[#442828] flex-shrink-0">
+      <div className="w-full md:w-80 bg-[#162E3D] text-white flex flex-col border-r border-[#244254] flex-shrink-0">
         {/* Header with Unread Counter */}
-        <div className="p-4 border-b border-[#442828] flex items-center justify-between">
+        <div className="p-4 border-b border-[#244254] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#A2FC4B] text-[#331E1E] flex items-center justify-center font-bold shadow-md">
+            <div className="w-9 h-9 rounded-xl bg-[#45C512] text-[#162E3D] flex items-center justify-center font-bold shadow-md">
               <MessageSquare className="w-5 h-5" />
             </div>
             <div>
@@ -272,7 +284,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
           </div>
 
           {totalUnread > 0 && (
-            <span className="flex items-center gap-1 bg-[#A2FC4B] text-[#331E1E] text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+            <span className="flex items-center gap-1 bg-[#45C512] text-[#162E3D] text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
               <Bell className="w-3 h-3" />
               {totalUnread} new
             </span>
@@ -280,7 +292,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
         </div>
 
         {/* Search Bar */}
-        <div className="p-3 border-b border-[#442828]">
+        <div className="p-3 border-b border-[#244254]">
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-[#A89898] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -288,7 +300,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
               placeholder="Search chats, staff, channels..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-[#261414] border border-[#442828] rounded-xl text-white placeholder-[#A89898] focus:outline-none focus:border-[#A2FC4B]"
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-[#0f1f2a] border border-[#244254] rounded-xl text-white placeholder-[#A89898] focus:outline-none focus:border-[#45C512]"
             />
           </div>
         </div>
@@ -303,7 +315,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
               </span>
               <button
                 onClick={() => setShowCreateChannel(true)}
-                className="text-[#A2FC4B] hover:text-[#bafc75] p-1 rounded hover:bg-white/10"
+                className="text-[#45C512] hover:text-[#5fe02b] p-1 rounded hover:bg-white/10"
                 title="Create New Channel"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -322,12 +334,12 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                     }}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer ${
                       isActive
-                        ? "bg-[#A2FC4B] text-[#331E1E] font-bold shadow-sm"
+                        ? "bg-[#45C512] text-[#162E3D] font-bold shadow-sm"
                         : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     <div className="flex items-center gap-2 truncate">
-                      <Hash className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? "text-[#331E1E]" : "text-[#A2FC4B]"}`} />
+                      <Hash className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? "text-[#162E3D]" : "text-[#45C512]"}`} />
                       <span className="truncate">{channel.name}</span>
                     </div>
                   </button>
@@ -354,12 +366,12 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                   }}
                   className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer ${
                     activeType === "dm" && activeId === "admin"
-                      ? "bg-[#A2FC4B] text-[#331E1E] font-bold shadow-sm"
+                      ? "bg-[#45C512] text-[#162E3D] font-bold shadow-sm"
                       : "text-white/80 hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <div className="w-6 h-6 rounded-full bg-[#A2FC4B] text-[#331E1E] flex items-center justify-center font-bold text-[10px] flex-shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-[#45C512] text-[#162E3D] flex items-center justify-center font-bold text-[10px] flex-shrink-0">
                       HR
                     </div>
                     <div className="truncate">
@@ -372,7 +384,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                   </div>
 
                   {unreadMap["admin"] ? (
-                    <span className="bg-[#A2FC4B] text-[#331E1E] font-bold text-[10px] px-1.5 py-0.2 rounded-full">
+                    <span className="bg-[#45C512] text-[#162E3D] font-bold text-[10px] px-1.5 py-0.2 rounded-full">
                       {unreadMap["admin"]}
                     </span>
                   ) : null}
@@ -393,7 +405,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                     }}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer ${
                       isActive
-                        ? "bg-[#A2FC4B] text-[#331E1E] font-bold shadow-sm"
+                        ? "bg-[#45C512] text-[#162E3D] font-bold shadow-sm"
                         : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`}
                   >
@@ -407,23 +419,23 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                           alt={emp.name}
                           className="w-7 h-7 rounded-full object-cover border border-white/20"
                         />
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 absolute -bottom-0.5 -right-0.5 border border-[#331E1E]"></span>
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 absolute -bottom-0.5 -right-0.5 border border-[#162E3D]"></span>
                       </div>
                       <div className="truncate min-w-0">
                         <div className="font-bold truncate flex items-center gap-1">
                           <span>{emp.name}</span>
-                          <span className={`text-[9px] font-mono px-1 rounded ${isActive ? "bg-[#331E1E]/20 text-[#331E1E]" : "bg-white/10 text-[#A89898]"}`}>
+                          <span className={`text-[9px] font-mono px-1 rounded ${isActive ? "bg-[#162E3D]/20 text-[#162E3D]" : "bg-white/10 text-[#A89898]"}`}>
                             {emp.empId}
                           </span>
                         </div>
-                        <div className={`text-[10px] truncate ${isActive ? "text-[#331E1E]/80" : "text-[#A89898]"}`}>
+                        <div className={`text-[10px] truncate ${isActive ? "text-[#162E3D]/80" : "text-[#A89898]"}`}>
                           {emp.designation}
                         </div>
                       </div>
                     </div>
 
                     {unreadCount > 0 && (
-                      <span className="bg-[#A2FC4B] text-[#331E1E] font-bold text-[10px] px-1.5 py-0.2 rounded-full ml-1 flex-shrink-0">
+                      <span className="bg-[#45C512] text-[#162E3D] font-bold text-[10px] px-1.5 py-0.2 rounded-full ml-1 flex-shrink-0">
                         {unreadCount}
                       </span>
                     )}
@@ -435,14 +447,14 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
         </div>
 
         {/* Current User Quick Badge Footer */}
-        <div className="p-3 border-t border-[#442828] bg-[#261414] flex items-center justify-between">
+        <div className="p-3 border-t border-[#244254] bg-[#0f1f2a] flex items-center justify-between">
           <div className="flex items-center gap-2 truncate">
-            <div className="w-7 h-7 rounded-full bg-[#A2FC4B] text-[#331E1E] font-bold flex items-center justify-center text-xs flex-shrink-0">
+            <div className="w-7 h-7 rounded-full bg-[#45C512] text-[#162E3D] font-bold flex items-center justify-center text-xs flex-shrink-0">
               {currentUser.name.charAt(0)}
             </div>
             <div className="truncate">
               <div className="text-xs font-bold text-white truncate">{currentUser.name}</div>
-              <div className="text-[10px] text-[#A2FC4B] truncate">
+              <div className="text-[10px] text-[#45C512] truncate">
                 {currentUser.designation || (currentUser.role === "admin" ? "HR Admin" : "Employee")}
               </div>
             </div>
@@ -453,16 +465,16 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
       {/* ========================================================================= */}
       {/* MAIN CHAT AREA */}
       {/* ========================================================================= */}
-      <div className="flex-1 flex flex-col bg-[#F6FAF0] h-full overflow-hidden">
+      <div className="flex-1 flex flex-col bg-[#F5F9F7] h-full overflow-hidden">
         {/* Active Conversation Header */}
-        <div className="p-4 bg-white border-b border-[#E2EAD6] flex items-center justify-between shadow-xs">
+        <div className="p-4 bg-white border-b border-[#DDEAE2] flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-3">
             {activeType === "channel" ? (
-              <div className="w-10 h-10 rounded-2xl bg-[#331E1E] text-[#A2FC4B] flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-[#162E3D] text-[#45C512] flex items-center justify-center shadow-sm">
                 <Hash className="w-5 h-5" />
               </div>
             ) : (
-              <div className="w-10 h-10 rounded-2xl bg-[#331E1E] text-[#A2FC4B] flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-[#162E3D] text-[#45C512] flex items-center justify-center shadow-sm">
                 {isDMWithAdmin ? (
                   <Shield className="w-5 h-5" />
                 ) : (
@@ -473,7 +485,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
 
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-[#331E1E]">
+                <h3 className="text-sm font-bold text-[#162E3D]">
                   {activeType === "channel"
                     ? `#${activeChannel?.name || activeId}`
                     : isDMWithAdmin
@@ -485,7 +497,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                     Group Channel
                   </span>
                 ) : (
-                  <span className="text-[10px] bg-[#331E1E] text-[#A2FC4B] font-bold px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] bg-[#162E3D] text-[#45C512] font-bold px-2 py-0.5 rounded-full">
                     {isDMWithAdmin ? "Official" : activeEmp?.designation}
                   </span>
                 )}
@@ -504,7 +516,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
             <button
               onClick={fetchMessages}
               title="Refresh messages"
-              className="p-2 text-[#706161] hover:text-[#331E1E] hover:bg-[#F6FAF0] rounded-xl transition-colors cursor-pointer"
+              className="p-2 text-[#706161] hover:text-[#162E3D] hover:bg-[#F5F9F7] rounded-xl transition-colors cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -515,13 +527,13 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
         <div className="flex-1 p-5 overflow-y-auto space-y-3.5">
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-6 text-[#706161]">
-              <div className="w-14 h-14 rounded-2xl bg-white border border-[#E2EAD6] flex items-center justify-center mb-3 shadow-sm text-[#331E1E]">
-                <MessageSquare className="w-7 h-7 text-[#A2FC4B]" />
+              <div className="w-14 h-14 rounded-2xl bg-white border border-[#DDEAE2] flex items-center justify-center mb-3 shadow-sm text-[#162E3D]">
+                <MessageSquare className="w-7 h-7 text-[#45C512]" />
               </div>
-              <h4 className="text-sm font-bold text-[#331E1E]">No messages yet</h4>
+              <h4 className="text-sm font-bold text-[#162E3D]">No messages yet</h4>
               <p className="text-xs max-w-sm mt-1">
                 Start the conversation with{" "}
-                <span className="font-bold text-[#331E1E]">
+                <span className="font-bold text-[#162E3D]">
                   {activeType === "channel" ? `#${activeChannel?.name || activeId}` : activeEmp?.name || "this colleague"}
                 </span>
                 .
@@ -537,7 +549,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                   className={`flex items-start gap-2.5 ${isMine ? "justify-end" : "justify-start"}`}
                 >
                   {!isMine && (
-                    <div className="w-8 h-8 rounded-full bg-[#331E1E] text-[#A2FC4B] flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
+                    <div className="w-8 h-8 rounded-full bg-[#162E3D] text-[#45C512] flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
                       {msg.senderName.charAt(0)}
                     </div>
                   )}
@@ -545,19 +557,19 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                   <div
                     className={`max-w-[75%] rounded-2xl p-3.5 shadow-sm space-y-1 ${
                       isMine
-                        ? "bg-[#331E1E] text-white rounded-tr-xs"
-                        : "bg-white text-[#331E1E] border border-[#E2EAD6] rounded-tl-xs"
+                        ? "bg-[#162E3D] text-white rounded-tr-xs"
+                        : "bg-white text-[#162E3D] border border-[#DDEAE2] rounded-tl-xs"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3 text-[10px]">
                       <div className="flex items-center gap-1.5 font-bold">
-                        <span className={isMine ? "text-[#A2FC4B]" : "text-[#331E1E]"}>
+                        <span className={isMine ? "text-[#45C512]" : "text-[#162E3D]"}>
                           {isMine ? "You" : msg.senderName}
                         </span>
                         {msg.senderDesignation && (
                           <span
                             className={`text-[9px] px-1.5 py-0.2 rounded font-normal ${
-                              isMine ? "bg-white/10 text-white/80" : "bg-[#F6FAF0] text-[#706161]"
+                              isMine ? "bg-white/10 text-white/80" : "bg-[#F5F9F7] text-[#706161]"
                             }`}
                           >
                             {msg.senderDesignation}
@@ -584,21 +596,21 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
         </div>
 
         {/* Message Input Composer */}
-        <div className="p-4 bg-white border-t border-[#E2EAD6]">
+        <div className="p-4 bg-white border-t border-[#DDEAE2]">
           <form onSubmit={handleSendMessage} className="flex items-center gap-2">
             <input
               type="text"
               placeholder={`Message ${activeType === "channel" ? `#${activeChannel?.name || activeId}` : activeEmp?.name || "colleague"}...`}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              className="flex-1 px-4 py-3 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B] font-medium text-[#331E1E]"
+              className="flex-1 px-4 py-3 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#45C512] font-medium text-[#162E3D]"
             />
             <button
               type="submit"
               disabled={!inputText.trim() || isSending}
               className={`px-5 py-3 rounded-2xl font-bold text-xs flex items-center gap-2 transition-all cursor-pointer ${
                 inputText.trim() && !isSending
-                  ? "bg-[#331E1E] text-[#A2FC4B] hover:bg-[#442828] shadow-md"
+                  ? "bg-[#162E3D] text-[#45C512] hover:bg-[#244254] shadow-md"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
               }`}
             >
@@ -612,10 +624,10 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
       {/* CREATE CHANNEL MODAL */}
       {showCreateChannel && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-white rounded-3xl border border-[#E2EAD6] shadow-2xl max-w-md w-full overflow-hidden animate-slideUp">
-            <div className="bg-[#331E1E] text-white p-5 flex items-center justify-between">
+          <div className="bg-white rounded-3xl border border-[#DDEAE2] shadow-2xl max-w-md w-full overflow-hidden animate-slideUp">
+            <div className="bg-[#162E3D] text-white p-5 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <Hash className="w-5 h-5 text-[#A2FC4B]" />
+                <Hash className="w-5 h-5 text-[#45C512]" />
                 <h3 className="text-base font-bold font-serif text-white">
                   Create New Group Channel
                 </h3>
@@ -630,7 +642,7 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
 
             <form onSubmit={handleCreateChannel} className="p-6 space-y-4">
               <div>
-                <label className="text-xs font-bold text-[#331E1E] block mb-1">
+                <label className="text-xs font-bold text-[#162E3D] block mb-1">
                   Channel Name:
                 </label>
                 <div className="relative">
@@ -647,13 +659,13 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                         e.target.value.toLowerCase().replace(/\s+/g, "-")
                       )
                     }
-                    className="w-full pl-7 pr-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B] font-mono"
+                    className="w-full pl-7 pr-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512] font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#331E1E] block mb-1">
+                <label className="text-xs font-bold text-[#162E3D] block mb-1">
                   Description / Topic:
                 </label>
                 <input
@@ -661,22 +673,22 @@ export default function TeamChatSection({ currentUser }: TeamChatSectionProps) {
                   placeholder="What is this channel about?"
                   value={newChannelDesc}
                   onChange={(e) => setNewChannelDesc(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-[#F6FAF0] border border-[#E2EAD6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A2FC4B]"
+                  className="w-full px-3 py-2 text-xs bg-[#F5F9F7] border border-[#DDEAE2] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#45C512]"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E2EAD6]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#DDEAE2]">
                 <button
                   type="button"
                   onClick={() => setShowCreateChannel(false)}
-                  className="px-4 py-2 bg-[#F6FAF0] text-[#331E1E] text-xs font-bold rounded-xl hover:bg-[#E2EAD6] cursor-pointer"
+                  className="px-4 py-2 bg-[#F5F9F7] text-[#162E3D] text-xs font-bold rounded-xl hover:bg-[#DDEAE2] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!newChannelName.trim()}
-                  className="px-5 py-2 bg-[#331E1E] text-[#A2FC4B] text-xs font-bold rounded-xl hover:bg-[#442828] shadow-md cursor-pointer"
+                  className="px-5 py-2 bg-[#162E3D] text-[#45C512] text-xs font-bold rounded-xl hover:bg-[#244254] shadow-md cursor-pointer"
                 >
                   Create Channel
                 </button>

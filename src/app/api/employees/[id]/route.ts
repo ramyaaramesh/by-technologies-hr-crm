@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getEmployeeById,
-  saveEmployee,
-  deleteEmployee,
+  getEmployeeByIdAsync,
+  saveEmployeeAsync,
+  deleteEmployeeAsync,
   getEmployeeByEmail,
 } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -13,14 +16,23 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const employee = getEmployeeById(id);
+    const employee = await getEmployeeByIdAsync(id);
     if (!employee) {
       return NextResponse.json(
         { success: false, error: "Employee not found" },
         { status: 404 }
       );
     }
-    return NextResponse.json({ success: true, employee });
+    return NextResponse.json(
+      { success: true, employee },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (error) {
     return NextResponse.json(
       { success: false, error: "Failed to get employee" },
@@ -32,7 +44,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const existing = getEmployeeById(id);
+    const existing = await getEmployeeByIdAsync(id);
     if (!existing) {
       return NextResponse.json(
         { success: false, error: "Employee not found" },
@@ -51,6 +63,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       status,
       password,
       avatarUrl,
+      dob,
+      addressLine1,
+      addressLine2,
+      cityStatePin,
+      annualSalary,
+      monthlySalary,
+      workTimings,
+      signatoryName,
+      signatoryTitle,
     } = body;
 
     if (email && existing.email && email.toLowerCase() !== existing.email.toLowerCase()) {
@@ -74,11 +95,29 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       status: status !== undefined ? status : existing.status,
       password: password !== undefined && password !== "" ? password : existing.password,
       avatarUrl: avatarUrl !== undefined ? avatarUrl : existing.avatarUrl,
+      dob: dob !== undefined ? dob : existing.dob,
+      addressLine1: addressLine1 !== undefined ? addressLine1 : existing.addressLine1,
+      addressLine2: addressLine2 !== undefined ? addressLine2 : existing.addressLine2,
+      cityStatePin: cityStatePin !== undefined ? cityStatePin : existing.cityStatePin,
+      annualSalary: annualSalary !== undefined ? Number(annualSalary) : existing.annualSalary,
+      monthlySalary: monthlySalary !== undefined ? Number(monthlySalary) : existing.monthlySalary,
+      workTimings: workTimings !== undefined ? workTimings : existing.workTimings,
+      signatoryName: signatoryName !== undefined ? signatoryName : existing.signatoryName,
+      signatoryTitle: signatoryTitle !== undefined ? signatoryTitle : existing.signatoryTitle,
     };
 
-    saveEmployee(updated);
+    await saveEmployeeAsync(updated);
 
-    return NextResponse.json({ success: true, employee: updated });
+    return NextResponse.json(
+      { success: true, employee: updated },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (error) {
     console.error("PUT employee error:", error);
     return NextResponse.json(
@@ -91,14 +130,23 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const success = deleteEmployee(id);
+    const success = await deleteEmployeeAsync(id);
     if (!success) {
       return NextResponse.json(
         { success: false, error: "Employee not found or could not be deleted" },
         { status: 404 }
       );
     }
-    return NextResponse.json({ success: true, message: "Employee deleted successfully" });
+    return NextResponse.json(
+      { success: true, message: "Employee deleted successfully" },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (error) {
     return NextResponse.json(
       { success: false, error: "Failed to delete employee" },

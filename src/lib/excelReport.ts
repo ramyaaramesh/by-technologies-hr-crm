@@ -4,6 +4,7 @@ import os from "os";
 import { Readable } from "stream";
 import { pipeline } from "stream/promises";
 import { getEmployees, getAttendance, getLeaves } from "./db";
+import { getAttendanceTeam } from "./types";
 
 export const REPORTS_BASE_DIR = process.env.VERCEL
   ? path.join(os.tmpdir(), "reports", "attendance")
@@ -135,17 +136,17 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
   </Style>
   <Style ss:ID="BrandTitle">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
-   <Font ss:FontName="Georgia" ss:Size="18" ss:Bold="1" ss:Color="#331E1E"/>
-   <Interior ss:Color="#A2FC4B" ss:Pattern="Solid"/>
+   <Font ss:FontName="Georgia" ss:Size="18" ss:Bold="1" ss:Color="#162E3D"/>
+   <Interior ss:Color="#45C512" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="SubTitle">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
-   <Font ss:FontName="Calibri" ss:Size="11" ss:Italic="1" ss:Color="#706161"/>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Italic="1" ss:Color="#5B7586"/>
   </Style>
   <Style ss:ID="SectionHeader">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
    <Font ss:FontName="Georgia" ss:Size="13" ss:Bold="1" ss:Color="#FFFFFF"/>
-   <Interior ss:Color="#331E1E" ss:Pattern="Solid"/>
+   <Interior ss:Color="#162E3D" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="ColHeader">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
@@ -153,8 +154,8 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CCCCCC"/>
     <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CCCCCC"/>
    </Borders>
-   <Font ss:FontName="Calibri" ss:Size="10" ss:Bold="1" ss:Color="#331E1E"/>
-   <Interior ss:Color="#EAF5DC" ss:Pattern="Solid"/>
+   <Font ss:FontName="Calibri" ss:Size="10" ss:Bold="1" ss:Color="#162E3D"/>
+   <Interior ss:Color="#EEF9EB" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="CellLeft">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
@@ -166,7 +167,7 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
   </Style>
   <Style ss:ID="CellBold">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
-   <Font ss:FontName="Calibri" ss:Size="10" ss:Bold="1" ss:Color="#331E1E"/>
+   <Font ss:FontName="Calibri" ss:Size="10" ss:Bold="1" ss:Color="#162E3D"/>
   </Style>
   <Style ss:ID="RateGood">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
@@ -208,6 +209,7 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
   <Table ss:DefaultRowHeight="20">
    <Column ss:Width="90"/>
    <Column ss:Width="160"/>
+   <Column ss:Width="130"/>
    <Column ss:Width="170"/>
    <Column ss:Width="180"/>
    <Column ss:Width="75"/>
@@ -220,12 +222,12 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
    <Column ss:Width="110"/>
 
    <Row ss:Height="36">
-    <Cell ss:MergeAcross="11" ss:StyleID="BrandTitle">
+    <Cell ss:MergeAcross="12" ss:StyleID="BrandTitle">
      <Data ss:Type="String">  B &amp; Y TECHNOLOGIES — MONTHLY ATTENDANCE REPORT</Data>
     </Cell>
    </Row>
    <Row ss:Height="22">
-    <Cell ss:MergeAcross="11" ss:StyleID="SubTitle">
+    <Cell ss:MergeAcross="12" ss:StyleID="SubTitle">
      <Data ss:Type="String">  Reporting Period: ${monthName} | Generated: ${new Date().toLocaleDateString("en-US", { dateStyle: "medium" })} ${new Date().toLocaleTimeString("en-US", { timeStyle: "short" })}</Data>
     </Cell>
    </Row>
@@ -234,6 +236,7 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
    <Row ss:Height="26">
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Employee ID</Data></Cell>
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Full Name</Data></Cell>
+    <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Attendance Team</Data></Cell>
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Department</Data></Cell>
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Designation</Data></Cell>
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Status</Data></Cell>
@@ -252,6 +255,7 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
    <Row ss:Height="22">
     <Cell ss:StyleID="CellBold"><Data ss:Type="String">${emp.empId}</Data></Cell>
     <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${emp.name}</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${getAttendanceTeam(emp)}</Data></Cell>
     <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${emp.department}</Data></Cell>
     <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${emp.designation}</Data></Cell>
     <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${emp.status.toUpperCase()}</Data></Cell>
@@ -277,7 +281,8 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
  <Worksheet ss:Name="Daily Attendance Matrix">
   <Table ss:DefaultRowHeight="20">
    <Column ss:Width="85"/>
-   <Column ss:Width="145"/>`;
+   <Column ss:Width="145"/>
+   <Column ss:Width="110"/>`;
 
   for (let d = 1; d <= daysInMonth; d++) {
     xml += `<Column ss:Width="42"/>`;
@@ -285,13 +290,14 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
 
   xml += `
    <Row ss:Height="30">
-    <Cell ss:MergeAcross="${daysInMonth + 1}" ss:StyleID="SectionHeader">
+    <Cell ss:MergeAcross="${daysInMonth + 2}" ss:StyleID="SectionHeader">
      <Data ss:Type="String">  DAILY ATTENDANCE MATRIX — ${monthName.toUpperCase()}</Data>
     </Cell>
    </Row>
    <Row ss:Height="24">
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Emp ID</Data></Cell>
-    <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Name</Data></Cell>`;
+    <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Name</Data></Cell>
+    <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Team</Data></Cell>`;
 
   for (let d = 1; d <= daysInMonth; d++) {
     xml += `<Cell ss:StyleID="ColHeader"><Data ss:Type="String">D${d}</Data></Cell>`;
@@ -302,7 +308,8 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
     xml += `
    <Row ss:Height="20">
     <Cell ss:StyleID="CellBold"><Data ss:Type="String">${emp.empId}</Data></Cell>
-    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${emp.name}</Data></Cell>`;
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${emp.name}</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${getAttendanceTeam(emp)}</Data></Cell>`;
 
     for (let d = 1; d <= daysInMonth; d++) {
       const dayStr = `${month}-${String(d).padStart(2, "0")}`;
@@ -341,6 +348,7 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
    <Column ss:Width="95"/>
    <Column ss:Width="85"/>
    <Column ss:Width="140"/>
+   <Column ss:Width="120"/>
    <Column ss:Width="160"/>
    <Column ss:Width="85"/>
    <Column ss:Width="105"/>
@@ -348,7 +356,7 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
    <Column ss:Width="250"/>
 
    <Row ss:Height="30">
-    <Cell ss:MergeAcross="7" ss:StyleID="SectionHeader">
+    <Cell ss:MergeAcross="8" ss:StyleID="SectionHeader">
      <Data ss:Type="String">  DETAILED CHECK-IN &amp; SHIFT LOGS — ${monthName.toUpperCase()}</Data>
     </Cell>
    </Row>
@@ -356,6 +364,7 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Date</Data></Cell>
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Emp ID</Data></Cell>
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Name</Data></Cell>
+    <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Team</Data></Cell>
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Department</Data></Cell>
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Status</Data></Cell>
     <Cell ss:StyleID="ColHeader"><Data ss:Type="String">Check-In</Data></Cell>
@@ -378,6 +387,7 @@ export function generateExcelXml(month: string): { xml: string; fileName: string
     <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${att.date}</Data></Cell>
     <Cell ss:StyleID="CellBold"><Data ss:Type="String">${emp?.empId || "—"}</Data></Cell>
     <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${emp?.name || "—"}</Data></Cell>
+    <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${emp ? getAttendanceTeam(emp) : "—"}</Data></Cell>
     <Cell ss:StyleID="CellLeft"><Data ss:Type="String">${emp?.department || "—"}</Data></Cell>
     <Cell ss:StyleID="${statusStyle}"><Data ss:Type="String">${att.status}</Data></Cell>
     <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${att.checkInTime || "—"}</Data></Cell>
@@ -406,23 +416,23 @@ export function generateCsvContent(month: string): { csv: string; fileName: stri
   csv += `"Generated on: ${new Date().toLocaleString()}"\r\n\r\n`;
 
   csv += `"SECTION 1: MONTHLY EMPLOYEE SUMMARY"\r\n`;
-  csv += `"Employee ID","Full Name","Department","Designation","Status","Present Days","Late Days","Half Days","Absent Days","Approved Leaves","Recorded Days","Attendance Rate"\r\n`;
+  csv += `"Employee ID","Full Name","Attendance Team","Department","Designation","Status","Present Days","Late Days","Half Days","Absent Days","Approved Leaves","Recorded Days","Attendance Rate"\r\n`;
 
   employeeStats.forEach(
     ({ emp, present, late, halfDay, absent, leaveDays, totalRecorded, attendanceRate }) => {
-      csv += `"${emp.empId}","${emp.name}","${emp.department}","${emp.designation}","${emp.status}","${present}","${late}","${halfDay}","${absent}","${leaveDays}","${totalRecorded}","${attendanceRate}"\r\n`;
+      csv += `"${emp.empId}","${emp.name}","${getAttendanceTeam(emp)}","${emp.department}","${emp.designation}","${emp.status}","${present}","${late}","${halfDay}","${absent}","${leaveDays}","${totalRecorded}","${attendanceRate}"\r\n`;
     }
   );
 
   csv += `\r\n"SECTION 2: DAILY ATTENDANCE MATRIX (${monthName})"\r\n`;
-  let matrixHeader = `"Employee ID","Name"`;
+  let matrixHeader = `"Employee ID","Name","Attendance Team"`;
   for (let d = 1; d <= daysInMonth; d++) {
     matrixHeader += `,"Day ${d}"`;
   }
   csv += matrixHeader + `\r\n`;
 
   employees.forEach((emp) => {
-    let row = `"${emp.empId}","${emp.name}"`;
+    let row = `"${emp.empId}","${emp.name}","${getAttendanceTeam(emp)}"`;
     for (let d = 1; d <= daysInMonth; d++) {
       const dayStr = `${month}-${String(d).padStart(2, "0")}`;
       const rec = monthlyAttendance.find((a) => a.employeeId === emp.id && a.date === dayStr);
@@ -443,13 +453,13 @@ export function generateCsvContent(month: string): { csv: string; fileName: stri
   });
 
   csv += `\r\n"SECTION 3: DETAILED TIME LOGS"\r\n`;
-  csv += `"Date","Employee ID","Name","Department","Status","Check-In Time","Check-Out Time","Notes"\r\n`;
+  csv += `"Date","Employee ID","Name","Attendance Team","Department","Status","Check-In Time","Check-Out Time","Notes"\r\n`;
 
   monthlyAttendance
     .sort((a, b) => a.date.localeCompare(b.date))
     .forEach((att) => {
       const emp = employees.find((e) => e.id === att.employeeId);
-      csv += `"${att.date}","${emp?.empId || "—"}","${emp?.name || "—"}","${emp?.department || "—"}","${att.status}","${att.checkInTime || "—"}","${att.checkOutTime || "—"}","${(att.notes || "").replace(/"/g, '""')}"\r\n`;
+      csv += `"${att.date}","${emp?.empId || "—"}","${emp?.name || "—"}","${emp ? getAttendanceTeam(emp) : "—"}","${emp?.department || "—"}","${att.status}","${att.checkInTime || "—"}","${att.checkOutTime || "—"}","${(att.notes || "").replace(/"/g, '""')}"\r\n`;
     });
 
   return { csv, fileName, monthName };

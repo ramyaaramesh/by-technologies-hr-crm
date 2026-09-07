@@ -6,8 +6,11 @@ import {
   WORKSPACE_BASE_DIR,
   generateEmployeeMasterExcel,
   generateAppointmentLetterWord,
+  generateOfferLetterWord,
+  generateOfferLetterHtml,
   generateEmployeeDossierWord,
   generateNdaAgreementWord,
+  OfferLetterData,
 } from "@/lib/hrDocuments";
 import { getEmployees } from "@/lib/db";
 
@@ -17,6 +20,7 @@ export async function GET(request: NextRequest) {
     const file = searchParams.get("file");
     const generate = searchParams.get("generate");
     const empId = searchParams.get("empId") || undefined;
+    const format = searchParams.get("format") || searchParams.get("view");
 
     // Mode 1: Stream directly generated document
     if (generate) {
@@ -36,11 +40,41 @@ export async function GET(request: NextRequest) {
       const employees = getEmployees();
       const emp = employees.find((e) => e.empId === empId || e.id === empId) || employees[0];
 
+      // Custom parameters for offer letter if provided
+      const customOfferData: Partial<OfferLetterData> = {};
+      if (searchParams.get("candidateName")) customOfferData.candidateName = searchParams.get("candidateName")!;
+      if (searchParams.get("designation")) customOfferData.designation = searchParams.get("designation")!;
+      if (searchParams.get("empId")) customOfferData.empId = searchParams.get("empId")!;
+      if (searchParams.get("dob")) customOfferData.dob = searchParams.get("dob")!;
+      if (searchParams.get("addressLine1")) customOfferData.addressLine1 = searchParams.get("addressLine1")!;
+      if (searchParams.get("addressLine2")) customOfferData.addressLine2 = searchParams.get("addressLine2")!;
+      if (searchParams.get("cityStatePin")) customOfferData.cityStatePin = searchParams.get("cityStatePin")!;
+      if (searchParams.get("doj")) customOfferData.dateOfJoining = searchParams.get("doj")!;
+      if (searchParams.get("offerDate")) customOfferData.offerDate = searchParams.get("offerDate")!;
+      if (searchParams.get("annualSalary")) customOfferData.annualSalary = Number(searchParams.get("annualSalary"));
+      if (searchParams.get("monthlySalary")) customOfferData.monthlySalary = Number(searchParams.get("monthlySalary"));
+      if (searchParams.get("annualSalaryWords")) customOfferData.annualSalaryWords = searchParams.get("annualSalaryWords")!;
+      if (searchParams.get("signatoryName")) customOfferData.signatoryName = searchParams.get("signatoryName")!;
+      if (searchParams.get("signatoryTitle")) customOfferData.signatoryTitle = searchParams.get("signatoryTitle")!;
+      if (searchParams.get("workTimings")) customOfferData.workTimings = searchParams.get("workTimings")!;
+
+      // HTML preview requested
+      if (format === "html" && (genType === "offer_letter" || genType === "appointment_letter")) {
+        const html = generateOfferLetterHtml({ emp, ...customOfferData }, false);
+        return new NextResponse(html, {
+          status: 200,
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-cache",
+          },
+        });
+      }
+
       let doc = "";
       let fileName = "";
 
-      if (genType === "appointment_letter") {
-        const res = generateAppointmentLetterWord(emp);
+      if (genType === "offer_letter" || genType === "appointment_letter") {
+        const res = generateOfferLetterWord({ emp, ...customOfferData });
         doc = res.doc;
         fileName = res.fileName;
       } else if (genType === "employee_dossier") {

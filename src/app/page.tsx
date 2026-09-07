@@ -11,19 +11,19 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F6FAF0] flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F5F9F7] flex flex-col items-center justify-center p-4">
         <div className="relative">
           <img
             src="/logo-badge.png"
             alt="B & Y Technologies Logo"
-            className="w-16 h-16 rounded-full animate-pulse ring-4 ring-[#A2FC4B]"
+            className="w-16 h-16 rounded-full animate-pulse ring-4 ring-[#45C512]"
           />
-          <div className="absolute -inset-2 rounded-full border-2 border-[#A2FC4B] border-t-transparent animate-spin" />
+          <div className="absolute -inset-2 rounded-full border-2 border-[#45C512] border-t-transparent animate-spin" />
         </div>
-        <div className="mt-4 text-xs font-bold tracking-widest text-[#331E1E] uppercase font-serif">
+        <div className="mt-4 text-xs font-bold tracking-widest text-[#162E3D] uppercase font-serif">
           B &amp; Y TECHNOLOGIES
         </div>
-        <div className="text-[10px] text-[#706161] mt-0.5">Loading HR CRM System...</div>
+        <div className="text-[10px] text-[#5B7586] mt-0.5">Loading HR CRM System...</div>
       </div>
     );
   }

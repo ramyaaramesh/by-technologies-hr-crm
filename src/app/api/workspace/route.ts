@@ -29,7 +29,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { docType, empId } = body;
+    const { docType, empId, customOfferData } = body;
 
     if (!docType) {
       return NextResponse.json(
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const fileMeta = await saveWorkspaceDocumentStream(docType, empId);
+    const fileMeta = await saveWorkspaceDocumentStream(docType, empId, customOfferData);
 
     return NextResponse.json({
       success: true,
