@@ -265,7 +265,7 @@ export function readDatabase(): DatabaseSchema {
       inMemoryDb = JSON.parse(content);
       if (inMemoryDb && inMemoryDb.employees) {
         inMemoryDb.employees = inMemoryDb.employees.filter(
-          (e) => !tombstones.has(e.id.toLowerCase()) && !tombstones.has(e.empId.toLowerCase())
+          (e) => !tombstones.has(e.id.toLowerCase())
         );
       }
       return inMemoryDb!;
@@ -277,7 +277,7 @@ export function readDatabase(): DatabaseSchema {
       inMemoryDb = JSON.parse(content);
       if (inMemoryDb && inMemoryDb.employees) {
         inMemoryDb.employees = inMemoryDb.employees.filter(
-          (e) => !tombstones.has(e.id.toLowerCase()) && !tombstones.has(e.empId.toLowerCase())
+          (e) => !tombstones.has(e.id.toLowerCase())
         );
       }
       try {
@@ -313,7 +313,7 @@ export async function readDatabaseAsync(): Promise<DatabaseSchema> {
   if (blobDb) {
     if (blobDb.employees) {
       blobDb.employees = blobDb.employees.filter(
-        (e) => !tombstones.has(e.id.toLowerCase()) && !tombstones.has(e.empId.toLowerCase())
+        (e) => !tombstones.has(e.id.toLowerCase())
       );
     }
     inMemoryDb = blobDb;
@@ -417,6 +417,8 @@ export function getEmployeeByIdentifier(identifier: string): Employee | undefine
 }
 
 export function saveEmployee(employee: Employee): Employee {
+  unrecordDeletedId(employee.id);
+  unrecordDeletedId(employee.empId);
   const db = readDatabase();
   const index = db.employees.findIndex(
     (e) => e.id.toLowerCase() === employee.id.toLowerCase() || e.empId.toLowerCase() === employee.empId.toLowerCase()
@@ -435,6 +437,8 @@ export function saveEmployee(employee: Employee): Employee {
 }
 
 export async function saveEmployeeAsync(employee: Employee): Promise<Employee> {
+  unrecordDeletedId(employee.id);
+  unrecordDeletedId(employee.empId);
   const db = await readDatabaseAsync();
   const index = db.employees.findIndex(
     (e) => e.id.toLowerCase() === employee.id.toLowerCase() || e.empId.toLowerCase() === employee.empId.toLowerCase()
@@ -467,21 +471,18 @@ export function deleteEmployee(id: string): boolean {
   if (db.employees.length !== initialLen) {
     if (deletedEmp) {
       const empIdKey = deletedEmp.id;
-      const empCodeKey = deletedEmp.empId;
       recordDeletedId(empIdKey);
-      recordDeletedId(empCodeKey);
-      recordDeletedId(target);
       // Clean up related attendance
       db.attendance = db.attendance.filter(
-        (a) => a.employeeId !== empIdKey && a.employeeId !== empCodeKey
+        (a) => a.employeeId !== empIdKey && a.employeeId !== deletedEmp.empId
       );
       // Clean up related leaves
       db.leaves = db.leaves.filter(
-        (l) => l.employeeId !== empIdKey && l.employeeId !== empCodeKey
+        (l) => l.employeeId !== empIdKey && l.employeeId !== deletedEmp.empId
       );
       // Clean up related login logs
       db.loginLogs = db.loginLogs.filter(
-        (lg) => lg.employeeId !== empIdKey && lg.employeeId !== empCodeKey
+        (lg) => lg.employeeId !== empIdKey && lg.employeeId !== deletedEmp.empId
       );
     }
     writeDatabase(db);
@@ -505,21 +506,18 @@ export async function deleteEmployeeAsync(id: string): Promise<boolean> {
   if (db.employees.length !== initialLen) {
     if (deletedEmp) {
       const empIdKey = deletedEmp.id;
-      const empCodeKey = deletedEmp.empId;
       recordDeletedId(empIdKey);
-      recordDeletedId(empCodeKey);
-      recordDeletedId(target);
       // Clean up related attendance
       db.attendance = db.attendance.filter(
-        (a) => a.employeeId !== empIdKey && a.employeeId !== empCodeKey
+        (a) => a.employeeId !== empIdKey && a.employeeId !== deletedEmp.empId
       );
       // Clean up related leaves
       db.leaves = db.leaves.filter(
-        (l) => l.employeeId !== empIdKey && l.employeeId !== empCodeKey
+        (l) => l.employeeId !== empIdKey && l.employeeId !== deletedEmp.empId
       );
       // Clean up related login logs
       db.loginLogs = db.loginLogs.filter(
-        (lg) => lg.employeeId !== empIdKey && lg.employeeId !== empCodeKey
+        (lg) => lg.employeeId !== empIdKey && lg.employeeId !== deletedEmp.empId
       );
     }
     await writeDatabaseAsync(db);

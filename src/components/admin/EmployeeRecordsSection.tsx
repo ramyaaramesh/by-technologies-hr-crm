@@ -117,9 +117,7 @@ export default function EmployeeRecordsSection({
           const raw = localStorage.getItem("byt_deleted_emp_ids");
           if (raw) {
             const deletedIds: string[] = JSON.parse(raw);
-            list = list.filter(
-              (e) => !deletedIds.includes(e.id) && !deletedIds.includes(e.empId)
-            );
+            list = list.filter((e) => !deletedIds.includes(e.id));
           }
         } catch (e) {
           // ignore
@@ -213,6 +211,15 @@ export default function EmployeeRecordsSection({
         });
         const data = await res.json();
         if (data.success) {
+          try {
+            const deletedKey = "byt_deleted_emp_ids";
+            const raw = localStorage.getItem(deletedKey);
+            if (raw && data.employee) {
+              const ids: string[] = JSON.parse(raw);
+              const filtered = ids.filter((id) => id !== data.employee.id && id !== data.employee.empId);
+              localStorage.setItem(deletedKey, JSON.stringify(filtered));
+            }
+          } catch (e) {}
           setIsAddModalOpen(false);
           fetchEmployees();
         } else {
@@ -264,7 +271,6 @@ export default function EmployeeRecordsSection({
           const raw = localStorage.getItem(deletedKey);
           const ids: string[] = raw ? JSON.parse(raw) : [];
           if (!ids.includes(target.id)) ids.push(target.id);
-          if (!ids.includes(target.empId)) ids.push(target.empId);
           localStorage.setItem(deletedKey, JSON.stringify(ids));
         } catch (e) {
           // ignore
