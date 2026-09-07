@@ -177,6 +177,17 @@ export function recordDeletedId(id: string): void {
   }
 }
 
+export function unrecordDeletedId(id: string): void {
+  if (!id) return;
+  const target = id.trim().toLowerCase();
+  inMemoryDeletedIds.delete(target);
+  try {
+    fs.writeFileSync(TOMBSTONE_PATH, JSON.stringify(Array.from(inMemoryDeletedIds)), "utf-8");
+  } catch (e) {
+    // ignore
+  }
+}
+
 export function getDeletedIds(): string[] {
   loadTombstones();
   return Array.from(inMemoryDeletedIds);

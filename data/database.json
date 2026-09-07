@@ -3,7 +3,29 @@
     "name": "admin",
     "password": "admin123"
   },
-  "employees": [],
+  "employees": [
+    {
+      "id": "emp_1788780260236",
+      "empId": "BYT-101",
+      "name": "Ganesh Kumaar P",
+      "email": "",
+      "phone": "7695979878",
+      "designation": "Managing Director",
+      "department": "Executive Leadership",
+      "dateOfJoining": "2026-09-07",
+      "status": "active",
+      "password": "password123",
+      "avatarUrl": "https://api.dicebear.com/7.x/initials/svg?seed=Ganesh%20Kumaar%20P&backgroundColor=331e1e&textColor=a2fc4b",
+      "dob": "1998-06-15",
+      "addressLine1": "No: 12, Anna Nagar 2nd Avenue,",
+      "addressLine2": "Shenoy Nagar,",
+      "cityStatePin": "Chennai, Tamil Nadu - 600030",
+      "annualSalary": 600000,
+      "monthlySalary": 50000,
+      "createdAt": "2026-09-07T11:24:20.244Z",
+      "updatedAt": "2026-09-07T11:24:20.244Z"
+    }
+  ],
   "attendance": [],
   "leaves": [],
   "loginLogs": [],
