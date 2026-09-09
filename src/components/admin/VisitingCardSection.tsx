@@ -52,39 +52,39 @@ interface VisitingCardSectionProps {
 
 export const DEFAULT_CARD_LAYOUT: CardLayoutSettings = {
   name: {
-    x: 36.1, // 740 on 2048 (center)
-    y: 17.1, // 175 on 1024 (center)
-    fontSize: 74,
-    textAlign: "center",
+    x: 20.5, // 420 on 2048 (aligned right after laptop icon)
+    y: 19.0, // 195 on 1024 (vertically centered in dark olive ribbon)
+    fontSize: 76,
+    textAlign: "left",
   },
   designation: {
-    x: 34.2, // 700 on 2048 (center)
-    y: 27.1, // 278 on 1024 (center)
-    fontSize: 34,
-    textAlign: "center",
+    x: 20.5, // 420 on 2048
+    y: 26.8, // 275 on 1024 (centered in green ribbon below name)
+    fontSize: 40,
+    textAlign: "left",
   },
   phone: {
-    x: 11.2, // 230 on 2048 (left)
-    y: 51.8, // 530 on 1024
-    fontSize: 32,
+    x: 11.2, // 230 on 2048 (aligned with phone icon)
+    y: 51.5, // 527 on 1024
+    fontSize: 44,
     textAlign: "left",
   },
   email: {
-    x: 11.2, // 230 on 2048 (left)
-    y: 61.5, // 630 on 1024
-    fontSize: 28,
+    x: 11.2, // 230 on 2048 (aligned with email envelope icon)
+    y: 62.8, // 643 on 1024
+    fontSize: 40,
     textAlign: "left",
   },
   website: {
-    x: 11.2, // 230 on 2048 (left)
-    y: 70.5, // 722 on 1024
-    fontSize: 28,
+    x: 11.2, // 230 on 2048 (aligned with world globe icon)
+    y: 74.2, // 760 on 1024
+    fontSize: 40,
     textAlign: "left",
   },
   address: {
-    x: 11.2, // 230 on 2048 (left)
-    y: 82.6, // 846 on 1024
-    fontSize: 24,
+    x: 11.2, // 230 on 2048 (aligned with location pin icon)
+    y: 86.5, // 886 on 1024
+    fontSize: 32,
     textAlign: "left",
   },
 };
@@ -118,27 +118,27 @@ const FIELD_METAS: FieldMeta[] = [
     label: "Employee Name",
     icon: User,
     minFontSize: 24,
-    maxFontSize: 120,
+    maxFontSize: 130,
     color: "#FFFFFF",
-    defaultAlign: "center",
+    defaultAlign: "left",
     description: "Top dark olive ribbon (Bold White)",
   },
   {
     key: "designation",
     label: "Job Designation",
     icon: Briefcase,
-    minFontSize: 14,
-    maxFontSize: 70,
+    minFontSize: 16,
+    maxFontSize: 80,
     color: "#1b2817",
-    defaultAlign: "center",
+    defaultAlign: "left",
     description: "Light olive ribbon under name (Dark Green)",
   },
   {
     key: "phone",
     label: "Phone Number",
     icon: Phone,
-    minFontSize: 14,
-    maxFontSize: 60,
+    minFontSize: 16,
+    maxFontSize: 80,
     color: "#FFFFFF",
     defaultAlign: "left",
     description: "Next to telephone icon",
@@ -147,8 +147,8 @@ const FIELD_METAS: FieldMeta[] = [
     key: "email",
     label: "Email Address",
     icon: Mail,
-    minFontSize: 14,
-    maxFontSize: 60,
+    minFontSize: 16,
+    maxFontSize: 80,
     color: "#FFFFFF",
     defaultAlign: "left",
     description: "Next to email envelope icon",
@@ -157,8 +157,8 @@ const FIELD_METAS: FieldMeta[] = [
     key: "website",
     label: "Website URL",
     icon: Globe,
-    minFontSize: 14,
-    maxFontSize: 60,
+    minFontSize: 16,
+    maxFontSize: 80,
     color: "#FFFFFF",
     defaultAlign: "left",
     description: "Next to world globe icon",
@@ -167,13 +167,157 @@ const FIELD_METAS: FieldMeta[] = [
     key: "address",
     label: "Office Address",
     icon: MapPin,
-    minFontSize: 12,
-    maxFontSize: 50,
+    minFontSize: 14,
+    maxFontSize: 60,
     color: "#FFFFFF",
     defaultAlign: "left",
     description: "Next to location pin (2 lines)",
   },
 ];
+
+// Helper to split address into 2 lines
+export const splitAddress = (addr: string): [string, string] => {
+  if (!addr) return ["", ""];
+  if (addr.includes("\n")) {
+    const parts = addr.split("\n");
+    return [parts[0].trim(), parts.slice(1).join(" ").trim()];
+  }
+  const commaIdx = addr.indexOf(",");
+  if (commaIdx !== -1 && addr.length > 30) {
+    const secondComma = addr.indexOf(",", commaIdx + 1);
+    const splitPoint = secondComma !== -1 ? secondComma + 1 : commaIdx + 1;
+    return [addr.substring(0, splitPoint).trim(), addr.substring(splitPoint).trim()];
+  }
+  return [addr, ""];
+};
+
+// Reusable master canvas renderer for 100% WYSIWYG matching between preview & downloads
+export const drawCardToCanvas = (
+  canvas: HTMLCanvasElement,
+  data: VisitingCardData,
+  img: HTMLImageElement
+) => {
+  canvas.width = 2048;
+  canvas.height = 1024;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, 0, 0, 2048, 1024);
+
+  const layout = data.layout || DEFAULT_CARD_LAYOUT;
+  ctx.textBaseline = "middle";
+
+  // A. Employee Name
+  const nameCfg = layout.name || DEFAULT_CARD_LAYOUT.name;
+  ctx.fillStyle = "#FFFFFF";
+  ctx.textAlign = nameCfg.textAlign || "left";
+  ctx.font = `bold ${nameCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
+  ctx.fillText(
+    data.name || "Employee Name",
+    (nameCfg.x / 100) * 2048,
+    (nameCfg.y / 100) * 1024
+  );
+
+  // B. Job Designation
+  const desigCfg = layout.designation || DEFAULT_CARD_LAYOUT.designation;
+  ctx.fillStyle = "#1b2817";
+  ctx.textAlign = desigCfg.textAlign || "left";
+  ctx.font = `bold ${desigCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
+  ctx.fillText(
+    data.designation || "Job Designation",
+    (desigCfg.x / 100) * 2048,
+    (desigCfg.y / 100) * 1024
+  );
+
+  // C. Phone Number
+  const phoneCfg = layout.phone || DEFAULT_CARD_LAYOUT.phone;
+  ctx.fillStyle = "#FFFFFF";
+  ctx.textAlign = phoneCfg.textAlign || "left";
+  ctx.font = `bold ${phoneCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
+  ctx.fillText(
+    data.phone || "+91 7824878137",
+    (phoneCfg.x / 100) * 2048,
+    (phoneCfg.y / 100) * 1024
+  );
+
+  // D. Email Address
+  const emailCfg = layout.email || DEFAULT_CARD_LAYOUT.email;
+  ctx.fillStyle = "#FFFFFF";
+  ctx.textAlign = emailCfg.textAlign || "left";
+  ctx.font = `bold ${emailCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
+  ctx.fillText(
+    data.email || "info@bnytechnologies.com",
+    (emailCfg.x / 100) * 2048,
+    (emailCfg.y / 100) * 1024
+  );
+
+  // E. Website URL
+  const webCfg = layout.website || DEFAULT_CARD_LAYOUT.website;
+  ctx.fillStyle = "#FFFFFF";
+  ctx.textAlign = webCfg.textAlign || "left";
+  ctx.font = `bold ${webCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
+  ctx.fillText(
+    data.website || "www.bnytechnologies.com",
+    (webCfg.x / 100) * 2048,
+    (webCfg.y / 100) * 1024
+  );
+
+  // F. Office Address (supports 2 lines with proper spacing)
+  const addrCfg = layout.address || DEFAULT_CARD_LAYOUT.address;
+  ctx.fillStyle = "#FFFFFF";
+  ctx.textAlign = addrCfg.textAlign || "left";
+  ctx.font = `bold ${addrCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
+  const [line1, line2] = splitAddress(data.address);
+  const addrX = (addrCfg.x / 100) * 2048;
+  const addrY = (addrCfg.y / 100) * 1024;
+  const lineSpacing = addrCfg.fontSize * 1.25;
+  if (line2) {
+    ctx.fillText(line1, addrX, addrY - lineSpacing / 2);
+    ctx.fillText(line2, addrX, addrY + lineSpacing / 2);
+  } else {
+    ctx.fillText(line1 || data.address || "", addrX, addrY);
+  }
+};
+
+// Automatically upgrades legacy stored layouts with tiny font sizes to calibrated master proportions
+export const upgradeLegacyLayout = (layout?: Partial<CardLayoutSettings> | null): CardLayoutSettings => {
+  if (!layout) return JSON.parse(JSON.stringify(DEFAULT_CARD_LAYOUT));
+
+  return {
+    name: {
+      ...DEFAULT_CARD_LAYOUT.name,
+      ...(layout.name || {}),
+      fontSize: Math.max(layout.name?.fontSize || 0, DEFAULT_CARD_LAYOUT.name.fontSize),
+    },
+    designation: {
+      ...DEFAULT_CARD_LAYOUT.designation,
+      ...(layout.designation || {}),
+      fontSize: Math.max(layout.designation?.fontSize || 0, DEFAULT_CARD_LAYOUT.designation.fontSize),
+    },
+    phone: {
+      ...DEFAULT_CARD_LAYOUT.phone,
+      ...(layout.phone || {}),
+      fontSize: Math.max(layout.phone?.fontSize || 0, DEFAULT_CARD_LAYOUT.phone.fontSize),
+    },
+    email: {
+      ...DEFAULT_CARD_LAYOUT.email,
+      ...(layout.email || {}),
+      fontSize: Math.max(layout.email?.fontSize || 0, DEFAULT_CARD_LAYOUT.email.fontSize),
+    },
+    website: {
+      ...DEFAULT_CARD_LAYOUT.website,
+      ...(layout.website || {}),
+      fontSize: Math.max(layout.website?.fontSize || 0, DEFAULT_CARD_LAYOUT.website.fontSize),
+    },
+    address: {
+      ...DEFAULT_CARD_LAYOUT.address,
+      ...(layout.address || {}),
+      fontSize: Math.max(layout.address?.fontSize || 0, DEFAULT_CARD_LAYOUT.address.fontSize),
+    },
+  };
+};
 
 export default function VisitingCardSection({
   initialEmployee,
@@ -183,10 +327,23 @@ export default function VisitingCardSection({
   const [selectedEmpId, setSelectedEmpId] = useState<string>(
     initialEmployee?.id || ""
   );
-  const [cardData, setCardData] = useState<VisitingCardData>(() => ({
-    ...DEFAULT_CARD_DATA,
-    layout: JSON.parse(JSON.stringify(DEFAULT_CARD_LAYOUT)),
-  }));
+  const [cardData, setCardData] = useState<VisitingCardData>(() => {
+    let initialLayout = DEFAULT_CARD_LAYOUT;
+    if (initialEmployee) {
+      try {
+        const stored = localStorage.getItem(`byt_card_layout_${initialEmployee.id}`);
+        if (stored) {
+          initialLayout = upgradeLegacyLayout({ ...DEFAULT_CARD_LAYOUT, ...JSON.parse(stored) });
+        } else if (initialEmployee.visitingCard?.layout) {
+          initialLayout = upgradeLegacyLayout({ ...DEFAULT_CARD_LAYOUT, ...initialEmployee.visitingCard.layout });
+        }
+      } catch {}
+    }
+    return {
+      ...DEFAULT_CARD_DATA,
+      layout: JSON.parse(JSON.stringify(initialLayout)),
+    };
+  });
 
   // Tab & Slider state
   const [activeTab, setActiveTab] = useState<"text" | "sliders">("text");
@@ -201,7 +358,55 @@ export default function VisitingCardSection({
   const [activeFieldFocus, setActiveFieldFocus] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const cardContainerRef = useRef<HTMLDivElement | null>(null);
+  const templateImageRef = useRef<HTMLImageElement | null>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(672);
+  const [isTemplateLoaded, setIsTemplateLoaded] = useState<boolean>(false);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Preload master blank template image once
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = "/visiting-card-blank.png";
+    img.onload = () => {
+      templateImageRef.current = img;
+      setIsTemplateLoaded(true);
+      if (previewCanvasRef.current) {
+        drawCardToCanvas(previewCanvasRef.current, cardData, img);
+      }
+    };
+  }, []);
+
+  // Measure card preview container width dynamically for 100% pixel-perfect font scaling
+  useEffect(() => {
+    if (!cardContainerRef.current) return;
+    const el = cardContainerRef.current;
+    const updateSize = () => {
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 0) {
+          setContainerWidth(rect.width);
+        }
+      }
+    };
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(el);
+    window.addEventListener("resize", updateSize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateSize);
+    };
+  }, []);
+
+  // Whenever cardData changes or template image finishes loading, re-render the preview canvas
+  useEffect(() => {
+    if (templateImageRef.current && previewCanvasRef.current) {
+      drawCardToCanvas(previewCanvasRef.current, cardData, templateImageRef.current);
+    }
+  }, [cardData, isTemplateLoaded]);
 
   // Load employees list on mount
   useEffect(() => {
@@ -249,9 +454,9 @@ export default function VisitingCardSection({
     try {
       const stored = localStorage.getItem(`byt_card_layout_${emp.id}`);
       if (stored) {
-        savedLayout = { ...DEFAULT_CARD_LAYOUT, ...JSON.parse(stored) };
+        savedLayout = upgradeLegacyLayout({ ...DEFAULT_CARD_LAYOUT, ...JSON.parse(stored) });
       } else if (emp.visitingCard?.layout) {
-        savedLayout = { ...DEFAULT_CARD_LAYOUT, ...emp.visitingCard.layout };
+        savedLayout = upgradeLegacyLayout({ ...DEFAULT_CARD_LAYOUT, ...emp.visitingCard.layout });
       }
     } catch {
       // ignore
@@ -285,18 +490,16 @@ export default function VisitingCardSection({
   };
 
   const handleResetToDefaults = () => {
-    const emp = employees.find(
-      (e) => e.id === selectedEmpId || e.empId === selectedEmpId
-    );
-    if (emp) {
-      loadEmployeeToCard(emp);
-    } else {
-      setCardData({
-        ...DEFAULT_CARD_DATA,
-        layout: JSON.parse(JSON.stringify(DEFAULT_CARD_LAYOUT)),
-      });
+    setCardData({
+      ...DEFAULT_CARD_DATA,
+      layout: JSON.parse(JSON.stringify(DEFAULT_CARD_LAYOUT)),
+    });
+    if (selectedEmpId) {
+      try {
+        localStorage.removeItem(`byt_card_layout_${selectedEmpId}`);
+      } catch {}
     }
-    showToast("Reset to master template example words (Imran)");
+    showToast("Reset to master template example words and calibrated layout (Imran)");
   };
 
   const handleClearWords = () => {
@@ -320,22 +523,6 @@ export default function VisitingCardSection({
     setTimeout(() => {
       setToastMessage(null);
     }, 3500);
-  };
-
-  // Helper to split address into 2 lines
-  const splitAddress = (addr: string): [string, string] => {
-    if (!addr) return ["", ""];
-    if (addr.includes("\n")) {
-      const parts = addr.split("\n");
-      return [parts[0].trim(), parts.slice(1).join(" ").trim()];
-    }
-    const commaIdx = addr.indexOf(",");
-    if (commaIdx !== -1 && addr.length > 30) {
-      const secondComma = addr.indexOf(",", commaIdx + 1);
-      const splitPoint = secondComma !== -1 ? secondComma + 1 : commaIdx + 1;
-      return [addr.substring(0, splitPoint).trim(), addr.substring(splitPoint).trim()];
-    }
-    return [addr, ""];
   };
 
   // Layout Slider & Nudge Handlers
@@ -419,101 +606,17 @@ export default function VisitingCardSection({
 
   // High-Resolution 2048x1024 Canvas Render with Exact Slider Positions
   const renderCardCanvas = async (): Promise<string> => {
+    if (previewCanvasRef.current && templateImageRef.current) {
+      drawCardToCanvas(previewCanvasRef.current, cardData, templateImageRef.current);
+      return previewCanvasRef.current.toDataURL("image/png");
+    }
     return new Promise((resolve, reject) => {
       const canvas = canvasRef.current || document.createElement("canvas");
-      canvas.width = 2048;
-      canvas.height = 1024;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        reject(new Error("Canvas context not available"));
-        return;
-      }
-
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.src = "/visiting-card-blank.png";
       img.onload = () => {
-        // 1. Draw base blank template image (high quality)
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(img, 0, 0, 2048, 1024);
-
-        const layout = cardData.layout || DEFAULT_CARD_LAYOUT;
-
-        // Common text baseline
-        ctx.textBaseline = "middle";
-
-        // A. Employee Name
-        const nameCfg = layout.name || DEFAULT_CARD_LAYOUT.name;
-        ctx.fillStyle = "#FFFFFF";
-        ctx.textAlign = nameCfg.textAlign || "center";
-        ctx.font = `bold ${nameCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
-        ctx.fillText(
-          cardData.name || "Employee Name",
-          (nameCfg.x / 100) * 2048,
-          (nameCfg.y / 100) * 1024
-        );
-
-        // B. Job Designation
-        const desigCfg = layout.designation || DEFAULT_CARD_LAYOUT.designation;
-        ctx.fillStyle = "#1b2817";
-        ctx.textAlign = desigCfg.textAlign || "center";
-        ctx.font = `bold ${desigCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
-        ctx.fillText(
-          cardData.designation || "Job Designation",
-          (desigCfg.x / 100) * 2048,
-          (desigCfg.y / 100) * 1024
-        );
-
-        // C. Phone Number
-        const phoneCfg = layout.phone || DEFAULT_CARD_LAYOUT.phone;
-        ctx.fillStyle = "#FFFFFF";
-        ctx.textAlign = phoneCfg.textAlign || "left";
-        ctx.font = `bold ${phoneCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
-        ctx.fillText(
-          cardData.phone || "+91 0000000000",
-          (phoneCfg.x / 100) * 2048,
-          (phoneCfg.y / 100) * 1024
-        );
-
-        // D. Email Address
-        const emailCfg = layout.email || DEFAULT_CARD_LAYOUT.email;
-        ctx.fillStyle = "#FFFFFF";
-        ctx.textAlign = emailCfg.textAlign || "left";
-        ctx.font = `bold ${emailCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
-        ctx.fillText(
-          cardData.email || "info@bnytechnologies.com",
-          (emailCfg.x / 100) * 2048,
-          (emailCfg.y / 100) * 1024
-        );
-
-        // E. Website URL
-        const webCfg = layout.website || DEFAULT_CARD_LAYOUT.website;
-        ctx.fillStyle = "#FFFFFF";
-        ctx.textAlign = webCfg.textAlign || "left";
-        ctx.font = `bold ${webCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
-        ctx.fillText(
-          cardData.website || "www.bnytechnologies.com",
-          (webCfg.x / 100) * 2048,
-          (webCfg.y / 100) * 1024
-        );
-
-        // F. Office Address (supports 2 lines with proper spacing)
-        const addrCfg = layout.address || DEFAULT_CARD_LAYOUT.address;
-        ctx.fillStyle = "#FFFFFF";
-        ctx.textAlign = addrCfg.textAlign || "left";
-        ctx.font = `bold ${addrCfg.fontSize}px Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif`;
-        const [line1, line2] = splitAddress(cardData.address);
-        const addrX = (addrCfg.x / 100) * 2048;
-        const addrY = (addrCfg.y / 100) * 1024;
-        const lineSpacing = addrCfg.fontSize * 1.25;
-        if (line2) {
-          ctx.fillText(line1, addrX, addrY - lineSpacing / 2);
-          ctx.fillText(line2, addrX, addrY + lineSpacing / 2);
-        } else {
-          ctx.fillText(line1 || cardData.address || "", addrX, addrY);
-        }
-
+        drawCardToCanvas(canvas, cardData, img);
         const dataUrl = canvas.toDataURL("image/png");
         resolve(dataUrl);
       };
@@ -707,6 +810,7 @@ export default function VisitingCardSection({
   const selectedMeta = FIELD_METAS.find((m) => m.key === selectedField) || FIELD_METAS[0];
   const [addrLine1, addrLine2] = splitAddress(cardData.address);
   const layout = cardData.layout || DEFAULT_CARD_LAYOUT;
+  const scale = (containerWidth || 672) / 2048;
 
   return (
     <div className="space-y-6">
@@ -1435,274 +1539,288 @@ export default function VisitingCardSection({
               </button>
             </div>
 
-            {/* VISITING CARD PREVIEW CONTAINER (Using CSS Container Query for Pixel-Perfect Responsiveness) */}
-            <div className="relative w-full max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-gray-300 bg-black aspect-[2/1] group select-none @container">
-              {/* Fixed Master Template Background Image */}
-              <img
-                src="/visiting-card-blank.png"
-                alt="Uploaded Master Visiting Card Template"
-                className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+            {/* VISITING CARD PREVIEW CONTAINER (Using Live Canvas & Synchronized Pixel-Perfect Overlay) */}
+            <div
+              ref={cardContainerRef}
+              className="relative w-full max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-gray-300 bg-black aspect-[2/1] select-none"
+              style={{ containerType: "inline-size" }}
+            >
+              {/* 1. Live High-DPI Master Canvas (2048x1024, auto-scaled to container width) */}
+              <canvas
+                ref={previewCanvasRef}
+                width={2048}
+                height={1024}
+                className="w-full h-full object-cover block select-none pointer-events-none"
               />
 
-              {/* 1. EMPLOYEE NAME */}
-              <div
-                onClick={() => {
-                  setSelectedField("name");
-                  setActiveTab("sliders");
-                }}
-                title="Click to adjust Name position and size"
-                className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
-                  selectedField === "name"
-                    ? "ring-2 ring-[#45C512] bg-[#45C512]/15 shadow-sm"
-                    : "hover:ring-1 hover:ring-white/40"
-                }`}
-                style={{
-                  left: `${layout.name.x}%`,
-                  top: `${layout.name.y}%`,
-                  transform:
-                    (layout.name.textAlign || "center") === "center"
-                      ? "translate(-50%, -50%)"
-                      : (layout.name.textAlign || "center") === "right"
-                      ? "translate(-100%, -50%)"
-                      : "translate(0, -50%)",
-                  textAlign: layout.name.textAlign || "center",
-                }}
-              >
-                <input
-                  type="text"
-                  value={cardData.name}
-                  onChange={(e) =>
-                    setCardData((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                  onFocus={() => {
+              {/* 2. Interactive Selection & In-Place Typing Overlay */}
+              <div className="absolute inset-0 z-10 pointer-events-auto">
+                {/* 1. EMPLOYEE NAME */}
+                <div
+                  onClick={() => {
                     setSelectedField("name");
-                    setActiveFieldFocus("name");
+                    setActiveTab("sliders");
                   }}
-                  onBlur={() => setActiveFieldFocus(null)}
-                  placeholder="Employee Name"
-                  className="bg-transparent border-none text-white font-extrabold leading-none tracking-tight outline-none placeholder:text-white/60 drop-shadow-sm whitespace-nowrap"
+                  title="Click to adjust Name position and size"
+                  className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
+                    selectedField === "name"
+                      ? "ring-2 ring-[#45C512] bg-[#45C512]/15 shadow-sm"
+                      : "hover:ring-1 hover:ring-white/40"
+                  }`}
                   style={{
-                    fontSize: `${(layout.name.fontSize / 2048) * 100}cqw`,
-                    fontFamily: "Arial, Helvetica, sans-serif",
-                    textAlign: layout.name.textAlign || "center",
+                    left: `${layout.name.x}%`,
+                    top: `${layout.name.y}%`,
+                    transform:
+                      (layout.name.textAlign || "left") === "center"
+                        ? "translate(-50%, -50%)"
+                        : (layout.name.textAlign || "left") === "right"
+                        ? "translate(-100%, -50%)"
+                        : "translate(0, -50%)",
+                    textAlign: layout.name.textAlign || "left",
                   }}
-                />
-              </div>
+                >
+                  <input
+                    type="text"
+                    value={cardData.name}
+                    onChange={(e) =>
+                      setCardData((prev) => ({ ...prev, name: e.target.value }))
+                    }
+                    onFocus={() => {
+                      setSelectedField("name");
+                      setActiveFieldFocus("name");
+                    }}
+                    onBlur={() => setActiveFieldFocus(null)}
+                    placeholder="Employee Name"
+                    className="bg-transparent border-none text-white font-extrabold leading-none tracking-tight outline-none placeholder:text-white/60 drop-shadow-sm whitespace-nowrap"
+                    style={{
+                      fontSize: `${((layout.name.fontSize || 76) * scale).toFixed(1)}px`,
+                      fontFamily: "Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif",
+                      textAlign: layout.name.textAlign || "left",
+                      width: `${Math.max(10, (cardData.name || "").length + 1)}ch`,
+                    }}
+                  />
+                </div>
 
-              {/* 2. JOB DESIGNATION */}
-              <div
-                onClick={() => {
-                  setSelectedField("designation");
-                  setActiveTab("sliders");
-                }}
-                title="Click to adjust Designation position and size"
-                className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
-                  selectedField === "designation"
-                    ? "ring-2 ring-[#45C512] bg-white/40 shadow-sm"
-                    : "hover:ring-1 hover:ring-[#1b2817]/40"
-                }`}
-                style={{
-                  left: `${layout.designation.x}%`,
-                  top: `${layout.designation.y}%`,
-                  transform:
-                    (layout.designation.textAlign || "center") === "center"
-                      ? "translate(-50%, -50%)"
-                      : (layout.designation.textAlign || "center") === "right"
-                      ? "translate(-100%, -50%)"
-                      : "translate(0, -50%)",
-                  textAlign: layout.designation.textAlign || "center",
-                }}
-              >
-                <input
-                  type="text"
-                  value={cardData.designation}
-                  onChange={(e) =>
-                    setCardData((prev) => ({ ...prev, designation: e.target.value }))
-                  }
-                  onFocus={() => {
+                {/* 2. JOB DESIGNATION */}
+                <div
+                  onClick={() => {
                     setSelectedField("designation");
-                    setActiveFieldFocus("designation");
+                    setActiveTab("sliders");
                   }}
-                  onBlur={() => setActiveFieldFocus(null)}
-                  placeholder="Job Designation"
-                  className="bg-transparent border-none text-[#1b2817] font-bold leading-tight outline-none placeholder:text-[#1b2817]/60 whitespace-nowrap"
+                  title="Click to adjust Designation position and size"
+                  className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
+                    selectedField === "designation"
+                      ? "ring-2 ring-[#45C512] bg-white/40 shadow-sm"
+                      : "hover:ring-1 hover:ring-[#1b2817]/40"
+                  }`}
                   style={{
-                    fontSize: `${(layout.designation.fontSize / 2048) * 100}cqw`,
-                    fontFamily: "Arial, Helvetica, sans-serif",
-                    textAlign: layout.designation.textAlign || "center",
+                    left: `${layout.designation.x}%`,
+                    top: `${layout.designation.y}%`,
+                    transform:
+                      (layout.designation.textAlign || "left") === "center"
+                        ? "translate(-50%, -50%)"
+                        : (layout.designation.textAlign || "left") === "right"
+                        ? "translate(-100%, -50%)"
+                        : "translate(0, -50%)",
+                    textAlign: layout.designation.textAlign || "left",
                   }}
-                />
-              </div>
+                >
+                  <input
+                    type="text"
+                    value={cardData.designation}
+                    onChange={(e) =>
+                      setCardData((prev) => ({ ...prev, designation: e.target.value }))
+                    }
+                    onFocus={() => {
+                      setSelectedField("designation");
+                      setActiveFieldFocus("designation");
+                    }}
+                    onBlur={() => setActiveFieldFocus(null)}
+                    placeholder="Job Designation"
+                    className="bg-transparent border-none text-[#1b2817] font-bold leading-tight outline-none placeholder:text-[#1b2817]/60 whitespace-nowrap"
+                    style={{
+                      fontSize: `${((layout.designation.fontSize || 40) * scale).toFixed(1)}px`,
+                      fontFamily: "Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif",
+                      textAlign: layout.designation.textAlign || "left",
+                      width: `${Math.max(14, (cardData.designation || "").length + 1)}ch`,
+                    }}
+                  />
+                </div>
 
-              {/* 3. PHONE NUMBER */}
-              <div
-                onClick={() => {
-                  setSelectedField("phone");
-                  setActiveTab("sliders");
-                }}
-                title="Click to adjust Phone position and size"
-                className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
-                  selectedField === "phone"
-                    ? "ring-2 ring-[#45C512] bg-black/50 shadow-sm"
-                    : "hover:ring-1 hover:ring-white/40"
-                }`}
-                style={{
-                  left: `${layout.phone.x}%`,
-                  top: `${layout.phone.y}%`,
-                  transform:
-                    (layout.phone.textAlign || "left") === "center"
-                      ? "translate(-50%, -50%)"
-                      : (layout.phone.textAlign || "left") === "right"
-                      ? "translate(-100%, -50%)"
-                      : "translate(0, -50%)",
-                  textAlign: layout.phone.textAlign || "left",
-                }}
-              >
-                <input
-                  type="text"
-                  value={cardData.phone}
-                  onChange={(e) =>
-                    setCardData((prev) => ({ ...prev, phone: e.target.value }))
-                  }
-                  onFocus={() => {
+                {/* 3. PHONE NUMBER */}
+                <div
+                  onClick={() => {
                     setSelectedField("phone");
-                    setActiveFieldFocus("phone");
+                    setActiveTab("sliders");
                   }}
-                  onBlur={() => setActiveFieldFocus(null)}
-                  placeholder="Phone Number"
-                  className="bg-transparent border-none text-white font-bold tracking-wide outline-none placeholder:text-white/60 whitespace-nowrap"
+                  title="Click to adjust Phone position and size"
+                  className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
+                    selectedField === "phone"
+                      ? "ring-2 ring-[#45C512] bg-black/50 shadow-sm"
+                      : "hover:ring-1 hover:ring-white/40"
+                  }`}
                   style={{
-                    fontSize: `${(layout.phone.fontSize / 2048) * 100}cqw`,
-                    fontFamily: "Arial, Helvetica, sans-serif",
+                    left: `${layout.phone.x}%`,
+                    top: `${layout.phone.y}%`,
+                    transform:
+                      (layout.phone.textAlign || "left") === "center"
+                        ? "translate(-50%, -50%)"
+                        : (layout.phone.textAlign || "left") === "right"
+                        ? "translate(-100%, -50%)"
+                        : "translate(0, -50%)",
                     textAlign: layout.phone.textAlign || "left",
                   }}
-                />
-              </div>
+                >
+                  <input
+                    type="text"
+                    value={cardData.phone}
+                    onChange={(e) =>
+                      setCardData((prev) => ({ ...prev, phone: e.target.value }))
+                    }
+                    onFocus={() => {
+                      setSelectedField("phone");
+                      setActiveFieldFocus("phone");
+                    }}
+                    onBlur={() => setActiveFieldFocus(null)}
+                    placeholder="Phone Number"
+                    className="bg-transparent border-none text-white font-bold tracking-wide outline-none placeholder:text-white/60 whitespace-nowrap"
+                    style={{
+                      fontSize: `${((layout.phone.fontSize || 44) * scale).toFixed(1)}px`,
+                      fontFamily: "Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif",
+                      textAlign: layout.phone.textAlign || "left",
+                      width: `${Math.max(12, (cardData.phone || "").length + 1)}ch`,
+                    }}
+                  />
+                </div>
 
-              {/* 4. EMAIL ADDRESS */}
-              <div
-                onClick={() => {
-                  setSelectedField("email");
-                  setActiveTab("sliders");
-                }}
-                title="Click to adjust Email position and size"
-                className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
-                  selectedField === "email"
-                    ? "ring-2 ring-[#45C512] bg-black/50 shadow-sm"
-                    : "hover:ring-1 hover:ring-white/40"
-                }`}
-                style={{
-                  left: `${layout.email.x}%`,
-                  top: `${layout.email.y}%`,
-                  transform:
-                    (layout.email.textAlign || "left") === "center"
-                      ? "translate(-50%, -50%)"
-                      : (layout.email.textAlign || "left") === "right"
-                      ? "translate(-100%, -50%)"
-                      : "translate(0, -50%)",
-                  textAlign: layout.email.textAlign || "left",
-                }}
-              >
-                <input
-                  type="text"
-                  value={cardData.email}
-                  onChange={(e) =>
-                    setCardData((prev) => ({ ...prev, email: e.target.value }))
-                  }
-                  onFocus={() => {
+                {/* 4. EMAIL ADDRESS */}
+                <div
+                  onClick={() => {
                     setSelectedField("email");
-                    setActiveFieldFocus("email");
+                    setActiveTab("sliders");
                   }}
-                  onBlur={() => setActiveFieldFocus(null)}
-                  placeholder="Email Address"
-                  className="bg-transparent border-none text-white font-bold outline-none placeholder:text-white/60 whitespace-nowrap"
+                  title="Click to adjust Email position and size"
+                  className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
+                    selectedField === "email"
+                      ? "ring-2 ring-[#45C512] bg-black/50 shadow-sm"
+                      : "hover:ring-1 hover:ring-white/40"
+                  }`}
                   style={{
-                    fontSize: `${(layout.email.fontSize / 2048) * 100}cqw`,
-                    fontFamily: "Arial, Helvetica, sans-serif",
+                    left: `${layout.email.x}%`,
+                    top: `${layout.email.y}%`,
+                    transform:
+                      (layout.email.textAlign || "left") === "center"
+                        ? "translate(-50%, -50%)"
+                        : (layout.email.textAlign || "left") === "right"
+                        ? "translate(-100%, -50%)"
+                        : "translate(0, -50%)",
                     textAlign: layout.email.textAlign || "left",
                   }}
-                />
-              </div>
+                >
+                  <input
+                    type="text"
+                    value={cardData.email}
+                    onChange={(e) =>
+                      setCardData((prev) => ({ ...prev, email: e.target.value }))
+                    }
+                    onFocus={() => {
+                      setSelectedField("email");
+                      setActiveFieldFocus("email");
+                    }}
+                    onBlur={() => setActiveFieldFocus(null)}
+                    placeholder="Email Address"
+                    className="bg-transparent border-none text-white font-bold outline-none placeholder:text-white/60 whitespace-nowrap"
+                    style={{
+                      fontSize: `${((layout.email.fontSize || 40) * scale).toFixed(1)}px`,
+                      fontFamily: "Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif",
+                      textAlign: layout.email.textAlign || "left",
+                      width: `${Math.max(16, (cardData.email || "").length + 1)}ch`,
+                    }}
+                  />
+                </div>
 
-              {/* 5. WEBSITE URL */}
-              <div
-                onClick={() => {
-                  setSelectedField("website");
-                  setActiveTab("sliders");
-                }}
-                title="Click to adjust Website position and size"
-                className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
-                  selectedField === "website"
-                    ? "ring-2 ring-[#45C512] bg-black/50 shadow-sm"
-                    : "hover:ring-1 hover:ring-white/40"
-                }`}
-                style={{
-                  left: `${layout.website.x}%`,
-                  top: `${layout.website.y}%`,
-                  transform:
-                    (layout.website.textAlign || "left") === "center"
-                      ? "translate(-50%, -50%)"
-                      : (layout.website.textAlign || "left") === "right"
-                      ? "translate(-100%, -50%)"
-                      : "translate(0, -50%)",
-                  textAlign: layout.website.textAlign || "left",
-                }}
-              >
-                <input
-                  type="text"
-                  value={cardData.website}
-                  onChange={(e) =>
-                    setCardData((prev) => ({ ...prev, website: e.target.value }))
-                  }
-                  onFocus={() => {
+                {/* 5. WEBSITE URL */}
+                <div
+                  onClick={() => {
                     setSelectedField("website");
-                    setActiveFieldFocus("website");
+                    setActiveTab("sliders");
                   }}
-                  onBlur={() => setActiveFieldFocus(null)}
-                  placeholder="Website URL"
-                  className="bg-transparent border-none text-white font-bold outline-none placeholder:text-white/60 whitespace-nowrap"
+                  title="Click to adjust Website position and size"
+                  className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
+                    selectedField === "website"
+                      ? "ring-2 ring-[#45C512] bg-black/50 shadow-sm"
+                      : "hover:ring-1 hover:ring-white/40"
+                  }`}
                   style={{
-                    fontSize: `${(layout.website.fontSize / 2048) * 100}cqw`,
-                    fontFamily: "Arial, Helvetica, sans-serif",
+                    left: `${layout.website.x}%`,
+                    top: `${layout.website.y}%`,
+                    transform:
+                      (layout.website.textAlign || "left") === "center"
+                        ? "translate(-50%, -50%)"
+                        : (layout.website.textAlign || "left") === "right"
+                        ? "translate(-100%, -50%)"
+                        : "translate(0, -50%)",
                     textAlign: layout.website.textAlign || "left",
                   }}
-                />
-              </div>
+                >
+                  <input
+                    type="text"
+                    value={cardData.website}
+                    onChange={(e) =>
+                      setCardData((prev) => ({ ...prev, website: e.target.value }))
+                    }
+                    onFocus={() => {
+                      setSelectedField("website");
+                      setActiveFieldFocus("website");
+                    }}
+                    onBlur={() => setActiveFieldFocus(null)}
+                    placeholder="Website URL"
+                    className="bg-transparent border-none text-white font-bold outline-none placeholder:text-white/60 whitespace-nowrap"
+                    style={{
+                      fontSize: `${((layout.website.fontSize || 40) * scale).toFixed(1)}px`,
+                      fontFamily: "Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif",
+                      textAlign: layout.website.textAlign || "left",
+                      width: `${Math.max(16, (cardData.website || "").length + 1)}ch`,
+                    }}
+                  />
+                </div>
 
-              {/* 6. OFFICE ADDRESS */}
-              <div
-                onClick={() => {
-                  setSelectedField("address");
-                  setActiveTab("sliders");
-                }}
-                title="Click to adjust Address position and size"
-                className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
-                  selectedField === "address"
-                    ? "ring-2 ring-[#45C512] bg-black/50 shadow-sm"
-                    : "hover:ring-1 hover:ring-white/40"
-                }`}
-                style={{
-                  left: `${layout.address.x}%`,
-                  top: `${layout.address.y}%`,
-                  transform:
-                    (layout.address.textAlign || "left") === "center"
-                      ? "translate(-50%, -50%)"
-                      : (layout.address.textAlign || "left") === "right"
-                      ? "translate(-100%, -50%)"
-                      : "translate(0, -50%)",
-                  textAlign: layout.address.textAlign || "left",
-                }}
-              >
+                {/* 6. OFFICE ADDRESS */}
                 <div
-                  className="text-white font-bold leading-tight select-none whitespace-nowrap"
+                  onClick={() => {
+                    setSelectedField("address");
+                    setActiveTab("sliders");
+                  }}
+                  title="Click to adjust Address position and size"
+                  className={`absolute cursor-pointer transition-all duration-75 px-1 py-0.5 rounded ${
+                    selectedField === "address"
+                      ? "ring-2 ring-[#45C512] bg-black/50 shadow-sm"
+                      : "hover:ring-1 hover:ring-white/40"
+                  }`}
                   style={{
-                    fontSize: `${(layout.address.fontSize / 2048) * 100}cqw`,
-                    fontFamily: "Arial, Helvetica, sans-serif",
+                    left: `${layout.address.x}%`,
+                    top: `${layout.address.y}%`,
+                    transform:
+                      (layout.address.textAlign || "left") === "center"
+                        ? "translate(-50%, -50%)"
+                        : (layout.address.textAlign || "left") === "right"
+                        ? "translate(-100%, -50%)"
+                        : "translate(0, -50%)",
                     textAlign: layout.address.textAlign || "left",
                   }}
                 >
-                  <div>{addrLine1 || "No.624, Khivraj Building, 3rdFloor,"}</div>
-                  {addrLine2 && <div>{addrLine2}</div>}
+                  <div
+                    className="text-white font-bold leading-tight select-none whitespace-nowrap"
+                    style={{
+                      fontSize: `${((layout.address.fontSize || 32) * scale).toFixed(1)}px`,
+                      lineHeight: 1.25,
+                      fontFamily: "Arial, Helvetica, -apple-system, BlinkMacSystemFont, sans-serif",
+                      textAlign: layout.address.textAlign || "left",
+                    }}
+                  >
+                    <div>{addrLine1 || "No.624, Khivraj Building, 3rdFloor,"}</div>
+                    {addrLine2 && <div>{addrLine2}</div>}
+                  </div>
                 </div>
               </div>
             </div>
